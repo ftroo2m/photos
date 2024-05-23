@@ -119,7 +119,7 @@ function updateHTMl(data) {
         bbContREG += '<p class="datasource">' + resUrl + '</p>'
       }
     }
-    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + new Date(data[i].createdTs * 1000).toLocaleString() + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].id + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span id="artalkCount" data-page-key="/m/' + data[i].id + '"></span></a ></span></div><div id="' + data[i].id + '" class="comment d-none"></div></div></li>';
+    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].name + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span id="artalkCount" data-page-key="/m/' + data[i].name + '"></span></a ></span></div><div id="' + data[i].name + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
   var bbAfter = "</ul></section>"
@@ -131,6 +131,24 @@ function updateHTMl(data) {
   window.Lately && Lately.init({
     target: '.datatime'
   });
+}
+
+function formatDate(dateString) {
+  // Parse the date string to a Date object
+  const date = new Date(dateString);
+
+  // Extract components
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // Months are zero-based in JavaScript
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  // Format components to ensure two digits for hours, minutes, and seconds
+  const formattedDate = `${year}/${month}/${day} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+  return formattedDate;
 }
 
 function loadArtalk(e) {
