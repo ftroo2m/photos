@@ -20,13 +20,13 @@ if (bbDom) {
   getFirstList()
   var btn = document.querySelector("button.button-load");
   btn.addEventListener("click", function () {
+    getNextList()
     btn.textContent = '加载中…';
     updateHTMl(nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
       return
     }
-    getNextList()
   });
 }
 
