@@ -33,7 +33,12 @@ if (bbDom) {
 function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
-  fetch(bbUrl,{headers:{Origin: 'memos.ffromto2.top'}}).then(res => res.json()).then(resdata => {
+  fetch(bbUrl,{
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    }
+  }).then(res => res.json()).then(resdata => {
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
@@ -48,7 +53,12 @@ function getFirstList() {
 
 function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
-  fetch(bbUrl).then(res => res.json()).then(resdata => {
+  fetch(bbUrl,{
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    }
+  }).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
     nextLength = nextDom.length
     page++
