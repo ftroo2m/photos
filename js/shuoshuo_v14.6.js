@@ -33,12 +33,7 @@ if (bbDom) {
 function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
-  fetch(bbUrl,{
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    }
-  }).then(res => res.json()).then(resdata => {
+  fetch(bbUrl).then(res => res.json()).then(resdata => {
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
@@ -53,12 +48,7 @@ function getFirstList() {
 
 function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
-  fetch(bbUrl,{
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    }
-  }).then(res => res.json()).then(resdata => {
+  fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
     nextLength = nextDom.length
     page++
@@ -152,18 +142,26 @@ function formatDate(dateString) {
 }
 
 function loadArtalk(e) {
+  // Retrieve data attributes from the clicked element
   let id = e.getAttribute("data-id"),
-    site = e.getAttribute("data-site"),
-    server = e.getAttribute("data-server");
+      site = e.getAttribute("data-site"),
+      server = e.getAttribute("data-server");
+
+  // Locate the DOM element to insert the comment section
   let artalkDom = document.getElementById(`${id}`);
   let artalkCon = "<div id='artalk'></div>";
+
+  // Check if the comment section is currently hidden
   if (artalkDom.classList.contains('d-none')) {
+    // Hide all other comment sections
     document.querySelectorAll('.comment').forEach((item) => {
       item.classList.add('d-none');
-    })
+    });
+    // Remove any existing Artalk container
     if (document.getElementById("artalk")) {
-      document.getElementById("artalk").remove()
+      document.getElementById("artalk").remove();
     }
+    // Insert the new Artalk container and initialize Artalk
     artalkDom.insertAdjacentHTML('beforeend', artalkCon);
     artalkDom.classList.remove('d-none');
     Artalk.init({
@@ -175,8 +173,9 @@ function loadArtalk(e) {
       emoticons: false
     });
   } else {
+    // If the comment section is already visible, hide it and remove the Artalk container
     artalkDom.classList.add('d-none');
-    document.getElementById("artalk").remove()
+    document.getElementById("artalk").remove();
   }
 }
 
