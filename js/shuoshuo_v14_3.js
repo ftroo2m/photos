@@ -123,7 +123,7 @@ function updateHTMl(data) {
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
   var bbAfter = "</ul></section>"
-  resultAll = bbBefore + result + bbAfterbbContREG 
+  resultAll = bbBefore + result + bbAfter
   bbDom.insertAdjacentHTML('beforeend', resultAll);
   fetchDB()
   document.querySelector('button.button-load').textContent = '加载更多';
