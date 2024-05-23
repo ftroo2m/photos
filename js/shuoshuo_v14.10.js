@@ -43,6 +43,7 @@ function getFirstList() {
     page++
     pageToken=resdata.nextPageToken
   });
+  getNextList()
 }
 
 function getNextList() {
