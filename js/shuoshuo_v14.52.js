@@ -26,6 +26,7 @@ if (bbDom) {
     updateHTMl(nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
+      console.log(counts['YjgLUkQWgaGkcMnNgiDE2i'])
       return
     }
   });
