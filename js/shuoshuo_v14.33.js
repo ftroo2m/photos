@@ -11,6 +11,7 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
+var counts = new Array()
 var page = 1,
   nextLength = 0,
   nextDom = '';
@@ -34,6 +35,7 @@ function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
+    getCounts(resdata.memos)
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
@@ -49,6 +51,7 @@ function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
+    getCounts(nextDom)
     nextLength = nextDom.length
     page++
     pageToken = resdata.nextPageToken
@@ -103,7 +106,7 @@ function updateHTMl(data) {
         bbContREG += '<p class="datasource">' + resUrl + '</p>'
       }
     }
-    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span">'+getCounts("/m/"+data[i].uid).count+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
+    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span">'+counts[data[i].uid]+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
   var bbAfter = "</ul></section>"
@@ -135,13 +138,13 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-async function getCounts(e) {
-  url=artalkInit.server+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
-  try {
-    let response = await fetch(url);
-    return await response.json();
-  } catch (error) {
-    console.log('Request Failed', error);
+function getCounts(data) {
+  counts=[]
+  for(var i=0;i<data.length;i++){
+    url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+data[i].uid+"&site_name=Ftroo2m"
+    fetch(url).then(res => res.json()).then(resdata => {
+      counts[data[i].uid]=resdata.json().toString()
+   });
   }
 }
 
