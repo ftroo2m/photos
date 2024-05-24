@@ -141,9 +141,10 @@ function formatDate(dateString) {
 function getCounts(data) {
   counts=[]
   for(var i=0;i<data.length;i++){
-    url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+data[i].uid+"&site_name=Ftroo2m"
+    key=data[i].uid
+    url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+key+"&site_name=Ftroo2m"
     fetch(url).then(res => res.json()).then(resdata => {
-      counts[data[i].uid]=resdata.json().count.toString()
+      counts[key]=resdata.json().count.toString()
    });
   }
 }
