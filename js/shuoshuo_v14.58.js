@@ -36,8 +36,7 @@ function getFirstList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     getCounts(resdata.memos)
-    .then(counts => {
-      // 在这里访问 counts 对象
+    .then(() => {
       updateHTMl(resdata.memos)
       var nowLength = resdata.length
       if (nowLength < pageSize) {
@@ -58,7 +57,7 @@ function getNextList() {
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
     getCounts(nextDom)
-    .then(counts => {
+    .then(() => {
       nextLength = nextDom.length
       page++
       pageToken = resdata.nextPageToken
@@ -117,7 +116,6 @@ function updateHTMl(data) {
         bbContREG += '<p class="datasource">' + resUrl + '</p>'
       }
     }
-    var key=data[i].uid
     result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span">'+counts[data[i].uid]+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
@@ -150,14 +148,14 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-function getCounts(data) {
-  counts={}
-  for(var i=0;i<data.length;i++){
-    key=data[i].uid
-    url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+key+"&site_name=Ftroo2m"
+async function getCounts(data) {
+  const counts = {};
+  for (const item of data) {
+    const key = item.uid;
+    const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=Ftroo2m`;
     fetch(url).then(res => res.json()).then(resdata => {
       counts[key]=resdata.count.toString()
-   });
+    })
   }
 }
 
