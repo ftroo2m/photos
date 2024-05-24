@@ -36,7 +36,6 @@ function getFirstList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     getCounts(resdata.memos)
-    console.log(counts['YjgLUkQWgaGkcMnNgiDE2i'])
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
@@ -155,6 +154,7 @@ async function getCounts(data) {
         return res.json();
       })
       .then(resdata => {
+        console.log(`Response data for uid ${key}:`, resdata); // 添加日志打印响应数据
         if (resdata && resdata.count !== undefined) {
           counts[key] = resdata.count.toString();
         } else {
@@ -167,6 +167,8 @@ async function getCounts(data) {
   });
 
   await Promise.all(fetchPromises);
+  console.log(`Counts object after fetching:`, counts); // 添加日志打印 counts 对象
+  console.log(`Count for uid 'YjgLUkQWgaGkcMnNgiDE2i':`, counts['YjgLUkQWgaGkcMnNgiDE2i']); // 添加日志打印指定 uid 的 count
 }
 
 function loadArtalk(e) {
