@@ -35,7 +35,7 @@ function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
-    counts=getCounts(data)
+    counts=getCounts(resdata.memos)
     .then(counts => {
       // 在这里访问 counts 对象
       console.log(counts['YjgLUkQWgaGkcMnNgiDE2i']);
