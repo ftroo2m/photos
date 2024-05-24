@@ -138,7 +138,7 @@ function formatDate(dateString) {
 function getCounts(e) {
   url=artalkInit.server+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
   fetch(url).then(res => res.json()).then(resdata => {
-    return resdata.count;
+    return (resdata.count).toString;
   });
 }
 
