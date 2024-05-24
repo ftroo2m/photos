@@ -11,7 +11,7 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
-var counts = {}
+const counts = {}
 var page = 1,
   nextLength = 0,
   nextDom = '';
@@ -35,7 +35,7 @@ function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
-    getCounts(resdata.memos)
+    counts=getCounts(resdata.memos)
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
@@ -51,7 +51,7 @@ function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
-    getCounts(nextDom)
+    counts=getCounts(nextDom)
     nextLength = nextDom.length
     page++
     pageToken = resdata.nextPageToken
@@ -140,7 +140,8 @@ function formatDate(dateString) {
 
 async function getCounts(data) {
   // 在函数内重置 counts 对象
-  Object.keys(counts).forEach(key => delete counts[key]);
+  
+  const counts={}
 
   const fetchPromises = data.map(item => {
     const key = item.uid;
@@ -169,6 +170,7 @@ async function getCounts(data) {
   await Promise.all(fetchPromises);
   console.log(`Counts object after fetching:`, counts); // 添加日志打印 counts 对象
   console.log(`Count for uid 'YjgLUkQWgaGkcMnNgiDE2i':`, counts['YjgLUkQWgaGkcMnNgiDE2i']); // 添加日志打印指定 uid 的 count
+  return counts;
 }
 
 function loadArtalk(e) {
