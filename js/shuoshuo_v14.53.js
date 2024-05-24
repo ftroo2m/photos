@@ -37,7 +37,14 @@ function getFirstList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     counts=getCounts(resdata.memos)
-    console.log(counts)
+    getCounts(data)
+  .then(counts => {
+    
+    console.log(counts['YjgLUkQWgaGkcMnNgiDE2i']);
+  })
+  .catch(error => {
+    console.error('Error getting counts:', error);
+  });
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
