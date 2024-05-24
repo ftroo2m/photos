@@ -11,7 +11,6 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
-var counts = {}
 var page = 1,
   nextLength = 0,
   nextDom = '';
@@ -22,8 +21,6 @@ if (bbDom) {
   var btn = document.querySelector("button.button-load");
   btn.addEventListener("click", function () {
     getNextList()
-    btn.textContent = '加载中…';
-    updateHTMl(nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
       return
@@ -36,8 +33,8 @@ function getFirstList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     getCounts(resdata.memos)
-    .then(() => {
-      updateHTMl(resdata.memos)
+    .then(counts => {
+      updateHTMl(resdata.memos,counts)
       var nowLength = resdata.length
       if (nowLength < pageSize) {
         document.querySelector("button.button-load").remove()
@@ -57,14 +54,15 @@ function getNextList() {
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
     getCounts(nextDom)
-    .then(() => {
+    .then(counts => {
       nextLength = nextDom.length
       page++
       pageToken = resdata.nextPageToken
       if (nextLength < 1) {
         document.querySelector("button.button-load").remove()
-        return
       }
+      btn.textContent = '加载中…';
+      updateHTMl(nextDom,counts)
     })
     .catch(error => {
       console.error('Error getting counts:', error);
@@ -72,7 +70,7 @@ function getNextList() {
   });
 }
 
-function updateHTMl(data) {
+function updateHTMl(data,counts) {
   var result = "",
     resultAll = "";
   const TAG_REG = /#([^\s#]+?) /g,
@@ -157,6 +155,8 @@ async function getCounts(data) {
       counts[key]=resdata.count.toString()
     })
   }
+
+  return counts;
 }
 
 function loadArtalk(e) {
