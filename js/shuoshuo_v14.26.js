@@ -135,13 +135,15 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-function getCounts(e) {
-  url=artalkInit.server+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
-  fetch(url).then(res => res.json()).then(resdata => {
-    console.log(resdata);
-    console.log(resdata.count.toString());
-    return resdata.count.toString();
-  });
+function getCounts(e, callback) {
+  const url = artalkInit.server + "/api/v2/comments?page_key=" + e + "&site_name=Ftroo2m";
+  fetch(url)
+    .then(res => res.json())
+    .then(resdata => {
+      console.log(resdata);
+      console.log(resdata.count.toString());
+      callback(resdata.count.toString());
+    });
 }
 
 function loadArtalk(e) {
