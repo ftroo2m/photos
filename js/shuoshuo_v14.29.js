@@ -59,7 +59,7 @@ function getNextList() {
   });
 }
 
-async function updateHTMl(data) {
+function updateHTMl(data) {
   var result = "",
     resultAll = "";
   const TAG_REG = /#([^\s#]+?) /g,
@@ -103,8 +103,7 @@ async function updateHTMl(data) {
         bbContREG += '<p class="datasource">' + resUrl + '</p>'
       }
     }
-    counts=await getCounts("/m/"+data[i].uid)
-    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + '<span">'+counts+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
+    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span">'+getCounts("/m/"+data[i].uid)+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
   var bbAfter = "</ul></section>"
@@ -136,12 +135,13 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-async function getCounts(e) {
-  const url = artalkInit.server + "/api/v2/comments?page_key=" + e + "&site_name=Ftroo2m";
-  const response = await fetch(url);
-  const resdata = await response.json();
-  console.log(resdata);
-  return resdata.count.toString();
+function getCounts(e) {
+  url=artalkInit.server+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
+  var counts
+  fetch(url).then(res => res.json()).then(resdata => {
+     counts=resdata.count.toString;
+  });
+  return counts;
 }
 
 function loadArtalk(e) {
