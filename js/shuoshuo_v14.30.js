@@ -11,6 +11,7 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
+var counts
 var page = 1,
   nextLength = 0,
   nextDom = '';
@@ -135,13 +136,14 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-function getCounts(e) {
+async function getCounts(e) {
   url=artalkInit.server+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
-  var counts
-  fetch(url).then(res => res.json()).then(resdata => {
-     counts=resdata.count.toString;
-  });
-  return counts;
+  try {
+    let response = await fetch(url);
+    return response.json().count.toString();
+  } catch (error) {
+    console.log('Request Failed', error);
+  }
 }
 
 function loadArtalk(e) {
