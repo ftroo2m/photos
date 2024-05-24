@@ -140,7 +140,7 @@ async function getCounts(e) {
   url=artalkInit.server+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
   try {
     let response = await fetch(url);
-    return response.json().count.toString();
+    return ((await response.json()).count).toString();
   } catch (error) {
     console.log('Request Failed', error);
   }
