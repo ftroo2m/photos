@@ -138,15 +138,22 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-function getCounts(data) {
+async function getCounts(data) {
   counts=[]
-  for(var i=0;i<data.length;i++){
-    key=data[i].uid
-    url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+key+"&site_name=Ftroo2m"
-    fetch(url).then(res => res.json()).then(resdata => {
-      counts[key]=resdata.count.toString()
-   });
-  }
+  const fetchPromises = data.map(item => {
+    const key = item.uid;
+    const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=Ftroo2m`;
+
+    return fetch(url)
+        .then(res => res.json())
+        .then(resdata => {
+            counts[key] = resdata.count.toString();
+        })
+        .catch(error => {
+            console.error(`Error fetching data for uid ${key}:`, error.message);
+        });
+  });
+  await Promise.all(fetchPromises);
 }
 
 function loadArtalk(e) {
