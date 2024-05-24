@@ -144,7 +144,7 @@ function getCounts(data) {
     key=data[i].uid
     url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+key+"&site_name=Ftroo2m"
     fetch(url).then(res => res.json()).then(resdata => {
-      counts[key]=resdata.json().count.toString()
+      counts[key]=resdata.count.toString()
    });
   }
 }
