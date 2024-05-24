@@ -43,11 +43,6 @@ function getFirstList() {
     page++
     pageToken=resdata.nextPageToken
   });
-  Artalk.loadCountWidget({
-    server:  artalkInit.server,
-    site:    artalkInit.site,
-    countEl: '#artalkCount'
-  });
 }
 
 function getNextList() {
@@ -61,11 +56,6 @@ function getNextList() {
       document.querySelector("button.button-load").remove()
       return
     }
-  });
-  Artalk.loadCountWidget({
-    server:  artalkInit.server,
-    site:    artalkInit.site,
-    countEl: '#artalkCount'
   });
 }
 
@@ -113,7 +103,7 @@ function updateHTMl(data) {
         bbContREG += '<p class="datasource">' + resUrl + '</p>'
       }
     }
-    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span class="artalkCount" data-page-key="/m/' + data[i].uid + '"></span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
+    result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span class="artalkCount" data-page-key="/m/' + data[i].uid + '">'+getCounts("/m/"+data[i].uid)+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
   var bbAfter = "</ul></section>"
@@ -143,6 +133,13 @@ function formatDate(dateString) {
   const formattedDate = `${year}/${month}/${day} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
   return formattedDate;
+}
+
+function getCounts(e) {
+  url=artalkInit.site+"/api/v2/comments?page_key="+e+"&site_name=Ftroo2m"
+  fetch(url).then(res => res.json()).then(resdata => {
+    return resdata.count;
+  });
 }
 
 function loadArtalk(e) {
