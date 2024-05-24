@@ -35,22 +35,21 @@ function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
-    counts=getCounts(resdata.memos)
+    getCounts(resdata.memos)
     .then(counts => {
       // 在这里访问 counts 对象
-      console.log(counts['YjgLUkQWgaGkcMnNgiDE2i']);
+      updateHTMl(resdata.memos)
+      var nowLength = resdata.length
+      if (nowLength < pageSize) {
+        document.querySelector("button.button-load").remove()
+        return
+      }
+      page++
+      pageToken=resdata.nextPageToken
     })
     .catch(error => {
       console.error('Error getting counts:', error);
     });
-    updateHTMl(resdata.memos)
-    var nowLength = resdata.length
-    if (nowLength < pageSize) {
-      document.querySelector("button.button-load").remove()
-      return
-    }
-    page++
-    pageToken=resdata.nextPageToken
   });
 }
 
@@ -58,14 +57,19 @@ function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
-    counts=getCounts(nextDom)
-    nextLength = nextDom.length
-    page++
-    pageToken = resdata.nextPageToken
-    if (nextLength < 1) {
-      document.querySelector("button.button-load").remove()
-      return
-    }
+    getCounts(nextDom)
+    .then(counts => {
+      nextLength = nextDom.length
+      page++
+      pageToken = resdata.nextPageToken
+      if (nextLength < 1) {
+        document.querySelector("button.button-load").remove()
+        return
+      }
+    })
+    .catch(error => {
+      console.error('Error getting counts:', error);
+    });
   });
 }
 
@@ -114,9 +118,6 @@ function updateHTMl(data) {
       }
     }
     var key=data[i].uid
-    console.log(counts)
-    console.log(key)
-    console.log(counts.YjgLUkQWgaGkcMnNgiDE2i)
     result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span">'+counts[data[i].uid]+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
@@ -150,7 +151,7 @@ function formatDate(dateString) {
 }
 
 async function getCounts(data) {
-  const counts={}
+  Object.keys(counts).forEach(key => delete counts[key]);
   const fetchPromises = data.map(item => {
     const key = item.uid;
     const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=Ftroo2m`;
@@ -163,7 +164,6 @@ async function getCounts(data) {
         return res.json();
       })
       .then(resdata => {
-        console.log(`Response data for uid ${key}:`, resdata); // 添加日志打印响应数据
         if (resdata && resdata.count !== undefined) {
           counts[key] = resdata.count.toString();
         } else {
@@ -175,7 +175,6 @@ async function getCounts(data) {
       });
   });
   await Promise.all(fetchPromises);
-  return counts;
 }
 
 function loadArtalk(e) {
