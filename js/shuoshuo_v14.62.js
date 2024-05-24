@@ -156,7 +156,7 @@ async function getCounts(data) {
 
     return fetch(url)
       .then(res => { 
-        res.json();
+        return res.json();
       })
       .then(resdata => {
           counts[key] = resdata.count.toString();
