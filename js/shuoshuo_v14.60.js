@@ -11,6 +11,7 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
+var counts = {}
 var page = 1,
   nextLength = 0,
   nextDom = '';
@@ -21,6 +22,8 @@ if (bbDom) {
   var btn = document.querySelector("button.button-load");
   btn.addEventListener("click", function () {
     getNextList()
+    btn.textContent = '加载中…';
+    updateHTMl(nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
       return
@@ -33,8 +36,8 @@ function getFirstList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     getCounts(resdata.memos)
-    .then(counts => {
-      updateHTMl(resdata.memos,counts)
+    .then(() => {
+      updateHTMl(resdata.memos)
       var nowLength = resdata.length
       if (nowLength < pageSize) {
         document.querySelector("button.button-load").remove()
@@ -54,15 +57,14 @@ function getNextList() {
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
     getCounts(nextDom)
-    .then(counts => {
+    .then(() => {
       nextLength = nextDom.length
       page++
       pageToken = resdata.nextPageToken
       if (nextLength < 1) {
         document.querySelector("button.button-load").remove()
+        return
       }
-      btn.textContent = '加载中…';
-      updateHTMl(nextDom,counts)
     })
     .catch(error => {
       console.error('Error getting counts:', error);
@@ -70,7 +72,7 @@ function getNextList() {
   });
 }
 
-function updateHTMl(data,counts) {
+function updateHTMl(data) {
   var result = "",
     resultAll = "";
   const TAG_REG = /#([^\s#]+?) /g,
@@ -147,16 +149,30 @@ function formatDate(dateString) {
 }
 
 async function getCounts(data) {
-  const counts = {};
-  for (const item of data) {
+  counts={}
+  const fetchPromises = data.map(item => {
     const key = item.uid;
     const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=Ftroo2m`;
-    fetch(url).then(res => res.json()).then(resdata => {
-      counts[key]=resdata.count.toString()
-    })
-  }
 
-  return counts;
+    return fetch(url)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(resdata => {
+        if (resdata && resdata.count !== undefined) {
+          counts[key] = resdata.count.toString();
+        } else {
+          console.error(`Invalid response data for uid ${key}`);
+        }
+      })
+      .catch(error => {
+        console.error(`Error fetching data for uid ${key}:`, error.message);
+      });
+  });
+  await Promise.all(fetchPromises);
 }
 
 function loadArtalk(e) {
