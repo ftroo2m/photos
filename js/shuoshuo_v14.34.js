@@ -143,7 +143,7 @@ function getCounts(data) {
   for(var i=0;i<data.length;i++){
     url=artalkInit.server+"/api/v2/comments?page_key="+"/m/"+data[i].uid+"&site_name=Ftroo2m"
     fetch(url).then(res => res.json()).then(resdata => {
-      counts[data[i].uid]=resdata.json().toString()
+      counts[(data[i].uid)]=resdata.json().toString()
    });
   }
 }
