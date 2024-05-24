@@ -107,6 +107,8 @@ function updateHTMl(data) {
         bbContREG += '<p class="datasource">' + resUrl + '</p>'
       }
     }
+    var key=data[i].uid
+    console.log(counts[key])
     result += '<li class="bb-list-li"><div class="bb-div"><div class="datatime"><div class="hy-avatar-block"><a href="' + bbMemo.userlink + '"class="hy-astyle"><img src="' + bbMemo.useravatar + '"class="hy-avatar"></a></div><div class="hy-intro"><div class="hy-name">' + bbMemo.username + '</div><div><span class="hy-time hy-text-muted">' + formatDate(data[i].createTime) + '</span></div></div></div><div class="datacont"><div>' + bbContREG + '</div></div><div class="hy-tag hy-text-muted"><span class="hy-location">' + (bbMemo.location == undefined ? "" : bbMemo.location) + '</span><span class="hy-tags-item">' + (bbMemo.tags == undefined ? "" : bbMemo.tags) + '</span><span><a data-id="' + data[i].uid + '" data-site="' + artalkInit.site + '"  data-server="' + artalkInit.server + '" class="commentsLink" onclick="loadArtalk(this)">' + (bbMemo.commentsShow ? bbMemo.commentsTitle : "") + ' ' + '<span">'+counts[data[i].uid]+'</span></a ></span></div><div id="' + data[i].uid + '" class="comment d-none"></div></div></li>';
   }
   var bbBefore = "<section class='bb-timeline'><ul class='bb-list-ul'>"
@@ -164,7 +166,6 @@ async function getCounts(data) {
         console.error(`Error fetching data for uid ${key}:`, error.message);
       });
   });
-
   await Promise.all(fetchPromises);
   return counts;
 }
