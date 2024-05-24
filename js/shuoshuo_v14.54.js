@@ -26,7 +26,6 @@ if (bbDom) {
     updateHTMl(nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
-      console.log(counts['YjgLUkQWgaGkcMnNgiDE2i'])
       return
     }
   });
@@ -36,15 +35,14 @@ function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
-    counts=getCounts(resdata.memos)
-    getCounts(data)
-  .then(counts => {
-    
-    console.log(counts['YjgLUkQWgaGkcMnNgiDE2i']);
-  })
-  .catch(error => {
-    console.error('Error getting counts:', error);
-  });
+    counts=getCounts(data)
+    .then(counts => {
+      // 在这里访问 counts 对象
+      console.log(counts['YjgLUkQWgaGkcMnNgiDE2i']);
+    })
+    .catch(error => {
+      console.error('Error getting counts:', error);
+    });
     updateHTMl(resdata.memos)
     var nowLength = resdata.length
     if (nowLength < pageSize) {
