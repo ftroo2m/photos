@@ -11,7 +11,7 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
-const counts = {}
+var counts = {}
 var page = 1,
   nextLength = 0,
   nextDom = '';
