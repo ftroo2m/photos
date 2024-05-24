@@ -11,7 +11,7 @@ loadCssCode(allCSS);
 var pageSize = bbMemo.limit
 var memos = bbMemo.memos
 var pageToken
-var counts = new Array()
+var counts = {}
 var page = 1,
   nextLength = 0,
   nextDom = '';
@@ -139,20 +139,32 @@ function formatDate(dateString) {
 }
 
 async function getCounts(data) {
-  counts=[]
+  // 在函数内重置 counts 对象
+  Object.keys(counts).forEach(key => delete counts[key]);
+
   const fetchPromises = data.map(item => {
     const key = item.uid;
     const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=Ftroo2m`;
 
     return fetch(url)
-        .then(res => res.json())
-        .then(resdata => {
-            counts[key] = resdata.count.toString();
-        })
-        .catch(error => {
-            console.error(`Error fetching data for uid ${key}:`, error.message);
-        });
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(resdata => {
+        if (resdata && resdata.count !== undefined) {
+          counts[key] = resdata.count.toString();
+        } else {
+          console.error(`Invalid response data for uid ${key}`);
+        }
+      })
+      .catch(error => {
+        console.error(`Error fetching data for uid ${key}:`, error.message);
+      });
   });
+
   await Promise.all(fetchPromises);
 }
 
