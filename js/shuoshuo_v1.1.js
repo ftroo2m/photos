@@ -152,7 +152,7 @@ async function getCounts(data) {
   counts={}
   const fetchPromises = data.map(item => {
     const key = item.uid;
-    const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=Ftroo2m`;
+    const url = `${artalkInit.server}/api/v2/comments?page_key=/m/${key}&site_name=`+artalkInit.site;
 
     return fetch(url)
       .then(res => { 
