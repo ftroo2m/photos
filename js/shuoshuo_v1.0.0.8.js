@@ -18,11 +18,11 @@ var page = 1,
 var bbDom = document.querySelector(bbMemo.domId);
 var load = '<div class="bb-load"><button class="load-btn button-load">加载中…</button></div>'
 if (bbDom) {
-  getFirstList()
+  await getFirstList();
   var btn = document.querySelector("button.button-load");
   btn.addEventListener("click", function () {
     btn.textContent = '加载中…';
-    getNextList()
+    await getNextList();
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
       return
@@ -30,7 +30,7 @@ if (bbDom) {
   });
 }
 
-function getFirstList() {
+async function getFirstList() {
   bbDom.insertAdjacentHTML('afterend', load);
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize + "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
@@ -51,7 +51,7 @@ function getFirstList() {
   });
 }
 
-function getNextList() {
+async function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
