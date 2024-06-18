@@ -57,6 +57,7 @@ function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     nextDom = resdata.memos
+    console.log(nextDom)
     getCounts(nextDom)
     .then(() => {
       nextLength = nextDom.length
