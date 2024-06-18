@@ -23,7 +23,6 @@ if (bbDom) {
   btn.addEventListener("click", function () {
     getNextList()
     btn.textContent = '加载中…';
-    updateHTMl(window.nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
       return
@@ -55,10 +54,11 @@ function getFirstList() {
 function getNextList() {
   var bbUrl = memos + "api/v1/memos?pageSize=" + pageSize +"&pageToken="+pageToken+ "&filter=" + "creator == 'users/"+bbMemo.creatorId+"' && visibilities == ['PUBLIC', 'PROTECTED']";
   fetch(bbUrl).then(res => res.json()).then(resdata => {
-    window.nextDom = resdata.memos
+    nextDom = resdata.memos
     getCounts(nextDom)
     .then(() => {
-      nextLength = window.nextDom.length
+      updateHTMl(nextDom);
+      nextLength = nextDom.length
       page++
       pageToken = resdata.nextPageToken
       if (nextLength < 1) {
