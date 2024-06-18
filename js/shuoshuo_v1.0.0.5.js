@@ -123,7 +123,10 @@ function updateHTMl(data) {
   resultAll = bbBefore + result + bbAfter
   bbDom.insertAdjacentHTML('beforeend', resultAll);
   fetchDB()
-  document.querySelector('button.button-load').textContent = '加载更多';
+  var button = document.querySelector('button.button-load');
+  if (button) {
+    button.textContent = '加载更多';
+  }
   window.ViewImage && ViewImage.init('.datacont img')
   window.Lately && Lately.init({
     target: '.datatime'
