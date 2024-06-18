@@ -23,6 +23,7 @@ if (bbDom) {
   btn.addEventListener("click", function () {
     getNextList()
     btn.textContent = '加载中…';
+    console.log(nextDom)
     updateHTMl(nextDom)
     if (nextLength < pageSize) {
       document.querySelector("button.button-load").remove()
