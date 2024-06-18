@@ -32,8 +32,21 @@ function getFirstList() {
   fetch(bbUrl).then(res => res.json()).then(resdata => {
     if(bbMemo.commentsShow == true){
       getCounts(resdata.memos)
+      .then(() => {
+        updateHTMl(resdata.memos)
+        var nowLength = resdata.length
+        if (nowLength < pageSize) {
+          document.querySelector("button.button-load").remove()
+          return
+        }
+        page++
+        pageToken=resdata.nextPageToken
+      })
+      .catch(error => {
+        console.error('Error getting counts:', error);
+      });
     }
-    .then(() => {
+    else{
       updateHTMl(resdata.memos)
       var nowLength = resdata.length
       if (nowLength < pageSize) {
@@ -42,10 +55,7 @@ function getFirstList() {
       }
       page++
       pageToken=resdata.nextPageToken
-    })
-    .catch(error => {
-      console.error('Error getting counts:', error);
-    });
+    }
   });
 }
 
@@ -55,8 +65,21 @@ function getNextList() {
     nextDom = resdata.memos
     if(bbMemo.commentsShow == true){
       getCounts(nextDom)
+      .then(() => {
+        updateHTMl(nextDom);
+        nextLength = nextDom.length
+        page++
+        pageToken = resdata.nextPageToken
+        if (nextLength < 1 || nextLength < pageSize) {
+          document.querySelector("button.button-load").remove()
+          return
+        }
+      })
+      .catch(error => {
+        console.error('Error getting counts:', error);
+      });
     }
-    .then(() => {
+    else{
       updateHTMl(nextDom);
       nextLength = nextDom.length
       page++
@@ -65,10 +88,7 @@ function getNextList() {
         document.querySelector("button.button-load").remove()
         return
       }
-    })
-    .catch(error => {
-      console.error('Error getting counts:', error);
-    });
+    }
   });
 }
 
