@@ -12,6 +12,9 @@ vo=gpu-next                           # <gpu/gpu-next/libmpv> 视频输出驱动
                                       ## gpu 具有最高普适性和完成度；gpu-next 查看此处讨论 https://github.com/hooke007/MPV_lazy/discussions/39；libmpv为部分前端设计，一般不使用
                                       ## gpu-next 具有更好的前景，目前已实现杜比视界 RPU 层元数据的解析映射，尚不支持 EL 层元数据解析
                                       ## gpu-next 和 gpu 之间的具体区别见官方 wiki 相关说明：https://github.com/mpv-player/mpv/wiki/GPU-Next-vs-GPU
+
+vf=lavfi="fps=fps=60:round=down"
+
 gpu-api=d3d11                         # <opengl/vulkan/d3d11> [SVP 补帧时推荐设置为 d3d11] 选择图形绘制接口。windows 的原生渲染为 d3d11（mpv 对于 windows 的默认，显卡注意开自适应电源模式）
                                       ## opengl 是最不推荐选择，vulkan 的 10bit 尚未完全实现 https://github.com/mpv-player/mpv/issues/8554
                                       ## 通过 d3d11-adapter 可以设定 mpv 使用哪块显卡。详见文档：https://mpv.io/manual/master/#options-d3d11-adapt
@@ -46,13 +49,13 @@ hwdec=d3d12va-copy,auto-copy          # 指定应使用的硬件视频解码 API
 #vd=h264_qsv,hevc_qsv,mpeg2_qsv,vp9_qsv,vp8_qsv,av1_qsv
                                       # 在 Intel 核显&NVDIA_MX_x50 这种配置组合的条件下，如果使用独显渲染，因为 MX 系列独显没有解码单元，即使使用 hwdec 指定硬解实际依然只能软解
                                       # 使用此参数可使用核显硬解、辅助渲染的同时让独显主力渲染（当 hwdec=no 时快进可能造成 MPV 假死，建议使用 xxxx-copy 的解码方式）
-#d3d11-adapter="NVIDIA GeForce RTX 2070 Super"
+#d3d11-adapter="NVIDIA GeForce RTX 3060 Laptop GPU"
                                       # [当 gpu-api=d3d11 时] 指定某张显卡作为主渲染输出，默认情况下自动选择系统指定的主渲染显卡
                                       # 显卡名可查看任务管理器自行更改适配。该参数等效在驱动面板中设置以独显运行 mpv
                                       # 例如使用 I+N 的双显笔记本的内屏时，实际使用的是"Intel(R) UHD Graphics"，修改该项示例指定独显可降低任务管理器中双显卡的 3d 渲染占比
                                       # 大多数双显卡笔记本在外接显示器时，表现类似“独显直连”，此时无需该参数也会自动用独显输出
                                       # [当 gpu-api=vulkan 时] 用参数 --vulkan-device 代替 --d3d11-adapter
-#vulkan-device="NVIDIA GeForce RTX 2070 Super"
+#vulkan-device="NVIDIA GeForce RTX 3060 Laptop GPU"
                                       # [当 gpu-api=vulkan 时] 此参数代替 --d3d11-adapter 执行指定显卡的职能
                                       # 默认为空，例值 "NVIDIA GeForce RTX 2070 Super" （必须使用完整的设备名或 UUID）
 
@@ -66,7 +69,6 @@ osc=no                                # [第三方 osc 脚本使用的前置条�
 #fs                                   # fs=fullscreen 打开即全屏幕
 #no-border                            # 默认为系统原生窗口界面，启用此项使用无边框界面（去除 Windows 的窗口装饰）
 no-title-bar                          # 控制是否使用窗口标题栏播放，默认启用。与 --no-border 不同，--no-title-bar 可以保留 Windows 原生窗口特性
-input-ime=no
 #media-controls=yes                   # <yes|默认 player|no>  启用媒体控制接口 SMTC 的集成（仅限 Windows） 
                                       ## 设置为 player，则只有 mpv 播放器会使用控件；将其设置为 yes 还将启用 libmpv 集成的控件
 #backdrop-type=auto                   # <auto|none|mica|acrylic|mica-alt> 控制背景/边框样式（仅限 Windows）
@@ -98,7 +100,6 @@ autofit-smaller=40%x30%               # <[W[xH]]> 窗口模式下最小占屏幕
 idle=yes                              # <yes|no|默认 once> 空闲待机（中止播放或所有文件播放后依旧保持 mpv 运行）
 #untimed                              # 输出视频帧时请勿入睡。（开启后无法正确显示补帧数值）
 log-file="~~/files/mpv.log"           # 记录 log
-ontop                                 # 窗口置顶
 snap-window=yes                       # 窗口移动时捕捉窗口到屏幕边缘 (仅限 windows 系统)
 #window-affinity=default              # <默认 default|excludefromcmcapture|monitor> 控制 mpv 的窗口关联行为。excludefromcmcapture: MPV 的窗口将被外部应用程序或屏幕录制软件完全排除在捕获之外；monitor: 在 MPV 窗口外变黑
 hr-seek=yes                           # <no|absolute|default|yes|always> 选择何时使用不限于关键帧的精确跳转。此类跳转需要将视频从前一个关键帧解码到目标位置，因此可能需要一些时间，具体取决于解码性能
@@ -122,7 +123,7 @@ reset-on-next-file=vid,aid,sid,secondary-sid,vf,af,loop-file,deinterlace,contras
                                       # 播放下一文件时需重置的更改项（色彩、画面、音轨、字幕和滤镜相关)
 input-ipc-server=\\.\pipe\mpvsocket   # input-ipc-server=<ipc_path> 开启 Ipc 功能，Linux/MacOS: input-ipc-server=/tmp/mpvsocket
                                       # 使用 SVP manager 时此项需设置为 mpvpipe 值
-#demuxer-max-bytes=500MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
+demuxer-max-bytes=3072MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
 #demuxer-readahead-secs=20            # 限制网络视频的最大缓存时间（秒数）
 #video-exts=3g2,3gp,asf,avi,bdmv,f4v,flv,h264,h265,iso,ifo,m2ts,m4v,mkv,mov,mp4,mp4v,mpeg,mpg,ogm,ogv,rm,rmvb,ts,vob,webm,wmv,y4m
                                       # 指定选项--autocreate-playlist 和--directory-filter-types 中要匹配的视频文件类型的扩展名列表
@@ -227,7 +228,7 @@ osd-duration=2000                     # 设置（全局）OSD 文本信息的持
                                       # conversion：完全取代颜色解码。这种类型的 LUT 应该摄取图像的原生色彩空间并输出归一化的非线性 RGB
 ##⇘⇘以下为 hdr 相关参数
 #inverse-tone-mapping=yes             # <yes|默认 no> [当 --vo=gpu-next 时生效] ，如果设置，则允许反向色调映射（将 SDR 扩展到 HDR），仅在 HDR 设备上有效。不支持使用部分色调映射曲线，请谨慎使用
-#target-colorspace-hint=yes           # <auto|yes|默认 no> [当 --vo=gpu-next 时生效] ，如果可能的话，自动配置显示器的输出色彩空间以通过媒体流的输入值（例如 HDR 直通）。需要驱动程序支持
+#target-colorspace-hint=yes           # <默认 auto|yes|no> [当 --vo=gpu-next 时生效] ，如果可能的话，自动配置显示器的输出色彩空间以通过媒体流的输入值（例如 HDR 直通）。需要驱动程序支持
                                       # Windows 需手动切换显示器 HDR 模式（Windows 的限制）
 #tone-mapping=hable                   # 色调映射算法，其他推荐能用的有 clip|mobius|reinhard|hable|bt.2390|gamma|spline|bt.2446a|st2094-10|st2094-40，默认 auto，根据内部启发式方法选择最佳曲线（--vo=gpu-next 下实际为 spline）
                                       # spline、bt.2446a、st2094-10 和 st2094-40 算法仅限--vo=gpu-next 下可用
@@ -333,6 +334,11 @@ audio-channels=7.1,5.1,stereo         # <默认值 auto-safe|auto|layouts|stereo
 ao=wasapi                             # --ao=<driver1,driver2,...[,]> 指定要使用的音频输出驱动程序的优先级列表，如果列表有尾随的 ','，mpv 将回退到未包含在列表中的驱动程序
                                       ## windows 推荐 wasapi；linux 推荐 alsa，需配合参数--audio-channels=auto；macos 推荐 coreaudio 或 coreaudio_exclusive
                                       ## 经测试如果有其他软件独占音频通道后再打开 MPV 画面会无比卡顿
+
+
+audio-buffer=3
+
+
 #audio-exclusive=yes                  # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
 #volume=100                           # 播放器启动音量。0 为静音，默认 100
 #volume-max=130                       # <100.0-1000.0> 最大音量。默认值 130（130 的响度约为 100 的两倍 1.3^3≈2）
@@ -585,12 +591,12 @@ libplacebo-opts=tone_map_metadata=cie_y
 
 ##⇘⇘以下为常规配置组启用参数，视需求选择使用
 #profile=ICC                                  # icc 色彩管理配置组，由操作系统的显示设置指定的 ICC 显示配置文件
-#profile=ICC+                                 # icc 色彩管理配置组，使用 color.org 提供的泛 icc 配置文件或专业校色文件，自行选择显示器对应色域的 icc 配置文件
+profile=ICC+                                 # icc 色彩管理配置组，使用 color.org 提供的泛 icc 配置文件或专业校色文件，自行选择显示器对应色域的 icc 配置文件
 profile=Target                                # target 色彩管理配置组，不可与 icc 色彩管理共存
-profile=Dither                                # 抖动算法配置组（fruit），效果接近 error-diffusion，耗能较低
-#profile=Dither+                              # 抖动算法配置组（error-diffusion），误差扩散的色深抖动算法，效果最好也最耗能
-profile=Tscale                                # [启用前须先注释 --tscale=<value>] 时域插值算法，具体参数见下方配置区的同名配置
-#profile=Tscale+                              # [启用前须先注释 --tscale=<value>] 备选的时域插值算法，具体参数见下方配置区的同名配置
+#profile=Dither                                # 抖动算法配置组（fruit），效果接近 error-diffusion，耗能较低
+profile=Dither+                              # 抖动算法配置组（error-diffusion），误差扩散的色深抖动算法，效果最好也最耗能
+#profile=Tscale                                # [启用前须先注释 --tscale=<value>] 时域插值算法，具体参数见下方配置区的同名配置
+profile=Tscale+                              # [启用前须先注释 --tscale=<value>] 备选的时域插值算法，具体参数见下方配置区的同名配置
 profile=HQ                                    # 最常用的内置算法配置组
 profile=DeBand-low                            # [启用前需先注释 --deband] 预设的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 low，使用 low 时已有很好的效果
 #profile=DeBand-medium                        # [启用前需先注释 --deband] 备选的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 medium
@@ -601,7 +607,8 @@ profile=HDR2SDR                               # HDR 映射参数配置组
 #profile=SWscaler                             # 备选的软件缩放方案
 
 ## 以下为着色器配置组，可按需启用以下所需任一配置组（这将覆盖上面的--glsl-shaders-append 参数）
-profile=NNEDI3                                # 适用于大多数场景（NNEDI3-32）               ## 绝大多数场景表现良好，对场景的适应性优于其他配置（抑制锯齿和振铃伪影）。喜欢通用性的优先使用此配置组
+profile=COMMON
+#profile=NNEDI3                                # 适用于大多数场景（NNEDI3-32）               ## 绝大多数场景表现良好，对场景的适应性优于其他配置（抑制锯齿和振铃伪影）。喜欢通用性的优先使用此配置组
 #profile=NNEDI3+                              # 适用于大多数场景（NNEDI3-64）               ## 理论上 NNEDI3-64 及以上变体具有更好地抑制振铃伪影效果，但耗能量级倍增，视设备性能自行选择是否使用
 #profile=AMD-FSR_EASU                         # 适用于大多数场景（AMD-FSR_EASU）            ## AMD 的 FSR 算法中 EASU 变体表现良好，相对于 FSR 和 RCAS 变体产生更少的振铃伪影，同时有不错的画面效果。放大至目标分辨率
 #profile=ravu-zoom                            # 适用于大多数场景（ravu-zoom）               ## 放大到目标分辨率
@@ -708,7 +715,7 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
 
 [HDR2SDR]
  profile-desc=HDR-SDR 映射参数
- target-colorspace-hint=no
+ #target-colorspace-hint=no
  tone-mapping=auto
  #tone-mapping-param=1.0
  #tone-mapping-max-boost=1.0
@@ -744,6 +751,10 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  #zimg-dither=error-diffusion       # [zimg] <no|ordered|random 默认|error-diffusion> 色深抖动算法
  zimg-fast=no                       # [zimg] 以质量为代价优化性能，默认 yes
 
+
+[COMMON]
+ profile-desc=自己配置
+ glsl-shaders="~~/shaders/other/nlmeans.glsl;~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl;~~/shaders/igv/FSRCNNX_x2_16-0-4-1_enhance.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/AMD-FSR/AMD-FSR-EASU_rgb.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl;~~/shaders/igv/adaptive-sharpen.glsl"
 
 [NNEDI3]
  profile-desc=适用于大多数场景
