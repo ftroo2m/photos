@@ -214,11 +214,9 @@ P                cycle stretch-image-subs-to-screen   ;show-text "pgs 字幕输�
 p                cycle sub-gray;show-text "pgs 字幕灰度转换:${sub-gray}"                                                #menu: 字幕 > 兼容性 > 切换 pgs 字幕灰度转换    #@state=(sub_gray and 'checked')
 #                ignore                                                                                                 #menu: 字幕 > ---
 Y                script-message sub-select toggle                                                                       #menu: 字幕 > 切换 字幕选择脚本
-CTRL+d           script-message-to sub_assrt sub-assrt                                                                  #menu: 字幕 > 打开 字幕下载菜单
 CTRL+m           script-message-to autosubsync autosubsync-menu                                                         #menu: 字幕 > 打开 字幕同步菜单
 CTRL+M           script-binding subtitle_lines/list_subtitles                                                           #menu: 字幕 > 打开 字幕内容菜单
 ALT+m            script-message-to sub_export export-selected-subtitles                                                 #menu: 字幕 > 导出当前内封字幕
-ALT+f            script-message-to sub_fastwhisper sub-fastwhisper                                                      #menu: 字幕 > 生成 AI 字幕
 #                ignore                                                                                                 #menu: 字幕 > ---
 r                add sub-pos -1;show-text "字幕上移:${sub-pos}"                                                         #menu: 字幕 > 其他操作 > 字幕上移
 t                add sub-pos +1;show-text "字幕下移:${sub-pos}"                                                         #menu: 字幕 > 其他操作 > 字幕下移
@@ -284,6 +282,9 @@ CTRL+J           script-message cycle-commands "change-list glsl-shaders pre '~~
 
 ##⇘⇘uosc 一级菜单：其它
 CTRL+P           script-message cycle-commands "apply-profile FSRCNNX;show-text 配置组：FSRCNNX" "apply-profile AMD-FSR_EASU;show-text 配置组：AMD-FSR_EASU" "apply-profile NNEDI3;show-text 配置组：NNEDI3" "apply-profile ravu-zoom;show-text 配置组：ravu-zoom" "apply-profile Anime4K;show-text 配置组：Anime4K" #menu: 其它 > 常规配置组 > 切换 指定配置组
+
+ALT+0        change-list glsl-shaders set "~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl;~~/shaders/AMD-FSR/AMD-FSR.glsl;~~/shaders/Anime4K/glsl/Denoise/Anime4K_Denoise_Bilateral_Mode.glsl;~~/shaders/Anime4K/glsl/Deblur/Anime4K_Deblur_DoG.glsl;~~/shaders/other/nlmeans.glsl"     #menu: 其它 > 常规配置组 > 切换常规配置
+
 ALT+1            apply-profile FSRCNNX;show-text "配置组：FSRCNNX"                                                      #menu: 其它 > 常规配置组 > 切换 FSRCNNX 配置
 ALT+2            apply-profile FSRCNNX+;show-text "配置组：FSRCNNX+"                                                    #menu: 其它 > 常规配置组 > 切换 FSRCNNX+ 配置
 ALT+3            apply-profile FSRCNNX-anime;show-text "配置组：FSRCNNX-anime"                                          #menu: 其它 > 常规配置组 > 切换 FSRCNNX-anime 配置
