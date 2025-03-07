@@ -12,16 +12,13 @@ vo=gpu-next                           # <gpu/gpu-next/libmpv> 视频输出驱动
                                       ## gpu 具有最高普适性和完成度；gpu-next 查看此处讨论 https://github.com/hooke007/MPV_lazy/discussions/39；libmpv为部分前端设计，一般不使用
                                       ## gpu-next 具有更好的前景，目前已实现杜比视界 RPU 层元数据的解析映射，尚不支持 EL 层元数据解析
                                       ## gpu-next 和 gpu 之间的具体区别见官方 wiki 相关说明：https://github.com/mpv-player/mpv/wiki/GPU-Next-vs-GPU
-
-vf=lavfi="fps=fps=60:round=down"
-
 gpu-api=d3d11                         # <opengl/vulkan/d3d11> [SVP 补帧时推荐设置为 d3d11] 选择图形绘制接口。windows 的原生渲染为 d3d11（mpv 对于 windows 的默认，显卡注意开自适应电源模式）
                                       ## opengl 是最不推荐选择，vulkan 的 10bit 尚未完全实现 https://github.com/mpv-player/mpv/issues/8554
                                       ## 通过 d3d11-adapter 可以设定 mpv 使用哪块显卡。详见文档：https://mpv.io/manual/master/#options-d3d11-adapt
                                       ### gpu-api 的选择？
                                       ## Linux/macOS： vulkan 或者 opengl，推荐 vulkan
                                       ## Windows：vulkan、d3d11 及 opengl 都可选。推荐使用 d3d11 的原生 api，具有最好的性能并实现了 10bit 输出
-#gpu-context=auto                     # <win/dxinterop/angle/d3d11/winvk/macvk> 选择输出后端。此项通常由 --gpu-api=<value> 自动决定正确值；--gpu-api=opengl 时默认选用 angle，此时最好改为 win/dxinterop
+#gpu-context=d3d11                     # <win/dxinterop/angle/d3d11/winvk/macvk> 选择输出后端。此项通常由 --gpu-api=<value> 自动决定正确值；--gpu-api=opengl 时默认选用 angle，此时最好改为 win/dxinterop
 #fbo-format=auto                      # 内处理精度。此项通常由 --gpu-api=<value> 自动决定正确值，默认首选 16 位及以上的精度。--vo=gpu-next 下此参数不可修改
 #d3d11-exclusive-fs=yes               # --gpu-api=d3d11 下的全屏独占
 #d3d11-flip=no                        # [通常发生在 --d3d11-exclusive-fs=yes 和 --on-top 一起使用时] 可用于避免 MPV 全屏时的冻屏问题
@@ -30,7 +27,7 @@ gpu-api=d3d11                         # <opengl/vulkan/d3d11> [SVP 补帧时推�
 #d3d11va-zero-copy=yes                # [当 gpu-api=d3d11 时] 默认情况下，当使用带有--gpu-api=d3d11 的硬件解码时，视频图像将从解码器表面复制（GPU 到 GPU）到着色器资源。
                                       # 设置此选项可通过直接从解码器图像采样来避免复制。这可能会提高性能并降低功耗，但可能会由于填充而导致图像在底部和右侧边缘采样不正确，并可能引发驱动程序错误，因为 Direct3D 11 从技术上不允许从解码器表面采样（尽管大多数驱动程序支持。）               
                                       # 当解码卡顿掉帧时可启用此项尝试改善
-hwdec=d3d12va-copy,auto-copy          # 指定应使用的硬件视频解码 API，软解改为 no，Windows 上的硬解建议使用 d3d11va 或 d3d12va-copy。d3d11va 具有最好的硬件解码支持，提供了 av1 格式的 4k60 帧和 8k 下的原生硬解加速。nvdec 虽然支持 yuv444 硬解，但该格式较为少见而且软解下并无压力
+hwdec=auto-copy                       # 指定应使用的硬件视频解码 API，软解改为 no，Windows 上的硬解建议使用 d3d11va 或 d3d12va-copy。d3d11va 具有最好的硬件解码支持，提供了 av1 格式的 4k60 帧和 8k 下的原生硬解加速。nvdec 虽然支持 yuv444 硬解，但该格式较为少见而且软解下并无压力
                                       # --hwdec=auto-safe 等效 --hwdec=yes。当 --gpu-api=d3d11 时，值 auto 首选 d3d11va；当 --gpu-api=vulkan 时，值 auto 首选 nvdec。auto-copy 首选 d3d11va-copy
                                       # 不推荐选用理论上解码效率最高的无-copy 的原生硬解，目的是确保全部设置/滤镜/着色器正常作用（有些不支持）。注意无-copy 的 nvdec 硬解不支持 d3d11，只支持 vulkan 和 opengl
                                       ## 也可以使用多个值组成的优先级列表，例如值 vulkan-copy,nvdec-copy,auto 表示依次尝试这些解码模式
@@ -55,7 +52,7 @@ d3d11-adapter="NVIDIA GeForce RTX 3060 Laptop GPU"
                                       # 例如使用 I+N 的双显笔记本的内屏时，实际使用的是"Intel(R) UHD Graphics"，修改该项示例指定独显可降低任务管理器中双显卡的 3d 渲染占比
                                       # 大多数双显卡笔记本在外接显示器时，表现类似“独显直连”，此时无需该参数也会自动用独显输出
                                       # [当 gpu-api=vulkan 时] 用参数 --vulkan-device 代替 --d3d11-adapter
-vulkan-device="NVIDIA GeForce RTX 3060 Laptop GPU"
+#vulkan-device="NVIDIA GeForce RTX 3060 Laptop GPU"
                                       # [当 gpu-api=vulkan 时] 此参数代替 --d3d11-adapter 执行指定显卡的职能
                                       # 默认为空，例值 "NVIDIA GeForce RTX 2070 Super" （必须使用完整的设备名或 UUID）
 
@@ -69,7 +66,7 @@ osc=no                                # [第三方 osc 脚本使用的前置条�
 #fs                                   # fs=fullscreen 打开即全屏幕
 #no-border                            # 默认为系统原生窗口界面，启用此项使用无边框界面（去除 Windows 的窗口装饰）
 no-title-bar                          # 控制是否使用窗口标题栏播放，默认启用。与 --no-border 不同，--no-title-bar 可以保留 Windows 原生窗口特性
-input-ime=no
+input-ime=no                          # <yes|默认 no> 是否启用全局 IME 特性，默认只在文本输入时激活 IME
 #media-controls=yes                   # <yes|默认 player|no>  启用媒体控制接口 SMTC 的集成（仅限 Windows） 
                                       ## 设置为 player，则只有 mpv 播放器会使用控件；将其设置为 yes 还将启用 libmpv 集成的控件
 #backdrop-type=auto                   # <auto|none|mica|acrylic|mica-alt> 控制背景/边框样式（仅限 Windows）
@@ -121,6 +118,10 @@ watch-later-options=start,vid,aid,sid
 #watch-later-options-clr              # 恢复播放记录时禁止恢复播放过程中所有更改过的设置，这可以解决部分已知问题
 #watch-later-options-remove=contrast  # 禁止部分参数恢复的话可使用该项来设置
                                       # 该项指定参数时目前必须单独列出，暂无法像--watch-later-options=option1,option2,...来指定，建议使用 watch-later-options 白名单来设置
+save-watch-history=yes                # <yes|默认 no> 是否保存正在播放的文件记录，然后可以通过内部的 select 脚本浏览它
+watch-history-path=~~/files/watch_history.json
+                                      # 存储观看历史记录的路径。默认值：~~state/watch_history.jsonl
+                                      # 此文件每行包含一个 JSON 对象。它的时间字段是 UNIX timestamp，其 path 字段是规范化的 path，其 title 字段是 title（可用时）
 reset-on-next-file=vid,aid,sid,secondary-sid,vf,af,loop-file,deinterlace,contrast,brightness,gamma,saturation,hue,video-zoom,video-rotate,video-pan-x,video-pan-y,panscan,speed,audio-delay,sub-pos,sub-scale,sub-delay,sub-speed,sub-visibility,secondary-sub-visibility
                                       # 播放下一文件时需重置的更改项（色彩、画面、音轨、字幕和滤镜相关)
 input-ipc-server=\\.\pipe\mpvsocket   # input-ipc-server=<ipc_path> 开启 Ipc 功能，Linux/MacOS: input-ipc-server=/tmp/mpvsocket
@@ -133,7 +134,7 @@ demuxer-max-bytes=3072MiB             # 播放网络视频时的目标缓存大�
                                       # 指定选项--audio-file-auto、--autocreate-playlist 和--directory-filter-types 中要匹配的音频文件类型的扩展名列表
 #image-exts=apng,avif,bmp,gif,j2k,jp2,jfif,jpeg,jpg,jxl,mj2,png,qoi,svg,tga,tif,tiff,webp
                                       # 指定选项--cover-art-auto、--autocreate-playlist 和--directory-filter-types 中要匹配的图像文件类型的扩展名列表
-#directory-mode=ignore                # <默认 auto|recursive|lazy|ignore> 打开目录时，选择递归、懒惰或忽略全部子目录
+directory-mode=ignore                 # <默认 auto|recursive|lazy|ignore> 打开目录时，选择递归、懒惰或忽略全部子目录
 #directory-filter-types=video         # <video,audio,image> 指定打开目录时要过滤的媒体文件类型。如果列表为空，所有文件都将添加到播放列表中（默认值：video,audio,image）
 #autocreate-playlist=same             # <默认 no|filter|same> 指定打开本地文件时自动创建播放列表的行为方式
                                       ## no: 不创建，仅加载单个文件；filter: 从父目录创建一个播放列表，其中包含匹配选项--directory-filter-types 中指定类型的文件；same: 从父目录创建一个播放列表，其中包含与当前加载文件所匹配的选项--*-exts 中相同媒体类型的文件
@@ -170,7 +171,7 @@ osd-border-style=outline-and-shadow   # <默认 outline-and-shadow|opaque-box|ba
 #osd-blur=0.5                         # OSD 文本字幕的边缘模糊度 <0..20.0> 
 #osd-bar-outline-size=1.2             # OSD 栏的轮廓大小
 #osd-scale-by-window=no               # <默认 yes|no> 指定是否根据窗口大小缩放 OSD
-#osd-playlist-entry=filename          # <默认 title|filename|both> 指定播放列表显示媒体标题或文件名或显示两者
+osd-playlist-entry=filename           # <默认 title|filename|both> 指定播放列表显示媒体标题或文件名或显示两者
 #osd-playing-msg="${?demuxer-via-network==yes:${media-title}}${?demuxer-via-network==no:${filename}} ${!playlist-count==1:列表:${playlist-pos-1}/${playlist-count}}"
                                       # 每个文件开始播放时短暂显示的信息。预设显示文件名
 osd-status-msg=${playback-time/full} / ${duration/full} (${percent-pos}%)\nframe: ${estimated-frame-number} / ${estimated-frame-count}
@@ -336,8 +337,8 @@ audio-channels=7.1,5.1,stereo         # <默认值 auto-safe|auto|layouts|stereo
 ao=wasapi                             # --ao=<driver1,driver2,...[,]> 指定要使用的音频输出驱动程序的优先级列表，如果列表有尾随的 ','，mpv 将回退到未包含在列表中的驱动程序
                                       ## windows 推荐 wasapi；linux 推荐 alsa，需配合参数--audio-channels=auto；macos 推荐 coreaudio 或 coreaudio_exclusive
                                       ## 经测试如果有其他软件独占音频通道后再打开 MPV 画面会无比卡顿
-audio-buffer=3
-#audio-exclusive=yes                  # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
+#audio-buffer=3
+audio-exclusive=no                  # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
 #volume=100                           # 播放器启动音量。0 为静音，默认 100
 #volume-max=130                       # <100.0-1000.0> 最大音量。默认值 130（130 的响度约为 100 的两倍 1.3^3≈2）
 #audio-pitch-correction=no            # [--af=scaletempo/scaletempo2/rubberband 的前置条件] 变速播放时的音调修正，默认 yes。自动插入前三项音频滤镜中其一（更多信息见滤镜区）
@@ -498,7 +499,8 @@ gpu-shader-cache-dir="~~/cache/shaders_cache"                                   
 #load-auto-profiles=no                                                          # <yes|no|默认 auto> 启用 mpv 内置的条件配置脚本 [auto_profiles.lua]
 #load-osd-console=no                                                            # 启用 mpv 内置的控制台脚本 [console.lua]，默认 yes
 #load-stats-overlay=no                                                          # 启用 mpv 内置的统计信息脚本 [stats.lua]，默认 yes
-#ytdl=no                                                                        # 启用 mpv 内置的网址解析增强脚本 [ytdl-hook.lua]，默认 yes
+#load-select=no                                                                 # 启用 mpv 内置的选择菜单脚本 [select.lua]，默认 yes
+ytdl=no                                                                        # 启用 mpv 内置的网址解析增强脚本 [ytdl-hook.lua]，默认 yes
 #ytdl-format=bestvideo+bestaudio/best                                           # <ytdl|best|worst|mp4|webm|...> 直接传递给 youtube-dl 的视频格式/质量。默认值：bestvideo+bestaudio/best
                                                                                 ## ytdl 不会将 --format 选项传递给 youtube-dl，因此不会覆盖其默认值。请注意，有时 youtube-dl 会返回 mpv 无法使用的格式，在这些情况下，mpv 默认值可能会更好
 #ytdl-raw-options=sub-langs="zh.*",write-subs=,write-auto-subs=
@@ -589,8 +591,8 @@ libplacebo-opts=tone_map_metadata=cie_y
 
 ##⇘⇘以下为常规配置组启用参数，视需求选择使用
 #profile=ICC                                  # icc 色彩管理配置组，由操作系统的显示设置指定的 ICC 显示配置文件
-profile=ICC+                                 # icc 色彩管理配置组，使用 color.org 提供的泛 icc 配置文件或专业校色文件，自行选择显示器对应色域的 icc 配置文件
-#profile=Target                                # target 色彩管理配置组，不可与 icc 色彩管理共存
+#profile=ICC+                                 # icc 色彩管理配置组，使用 color.org 提供的泛 icc 配置文件或专业校色文件，自行选择显示器对应色域的 icc 配置文件
+profile=Target                                # target 色彩管理配置组，不可与 icc 色彩管理共存
 #profile=Dither                                # 抖动算法配置组（fruit），效果接近 error-diffusion，耗能较低
 profile=Dither+                              # 抖动算法配置组（error-diffusion），误差扩散的色深抖动算法，效果最好也最耗能
 #profile=Tscale                                # [启用前须先注释 --tscale=<value>] 时域插值算法，具体参数见下方配置区的同名配置
@@ -604,8 +606,7 @@ profile=HDR2SDR                               # HDR 映射参数配置组
 #profile=HDR-PASS                             # HDR 直通参数配置组。HDR 直通时需禁用--icc-profile,icc-profile-auto 和--target-trc 参数。Windows 需手动切换显示器 HDR 模式（Windows 的限制）
 #profile=SWscaler                             # 备选的软件缩放方案
 
-## 以下为着色器配置组，可按需启用以下所需任一配置组（这将覆盖上面的--glsl-shaders-append 参数）
-profile=COMMON
+profile=NNEDI3+
 #profile=NNEDI3                                # 适用于大多数场景（NNEDI3-32）               ## 绝大多数场景表现良好，对场景的适应性优于其他配置（抑制锯齿和振铃伪影）。喜欢通用性的优先使用此配置组
 #profile=NNEDI3+                              # 适用于大多数场景（NNEDI3-64）               ## 理论上 NNEDI3-64 及以上变体具有更好地抑制振铃伪影效果，但耗能量级倍增，视设备性能自行选择是否使用
 #profile=AMD-FSR_EASU                         # 适用于大多数场景（AMD-FSR_EASU）            ## AMD 的 FSR 算法中 EASU 变体表现良好，相对于 FSR 和 RCAS 变体产生更少的振铃伪影，同时有不错的画面效果。放大至目标分辨率
@@ -748,6 +749,7 @@ profile=COMMON
  zimg-scaler-param-b=1/3
  #zimg-dither=error-diffusion       # [zimg] <no|ordered|random 默认|error-diffusion> 色深抖动算法
  zimg-fast=no                       # [zimg] 以质量为代价优化性能，默认 yes
+
 
 [COMMON]
  profile-desc=自己配置
@@ -944,6 +946,7 @@ profile=COMMON
  #profile-cond=demuxer_via_network == true
  profile-restore=copy
  title=${?pause==yes:⏸}${?mute==yes:🔇}${?ontop==yes:📌}${media-title}
+ osd-playlist-entry=title
 
 #[image]
 # profile-desc=图像
