@@ -46,13 +46,13 @@ hwdec=auto-copy                       # 指定应使用的硬件视频解码 API
 #vd=h264_qsv,hevc_qsv,mpeg2_qsv,vp9_qsv,vp8_qsv,av1_qsv
                                       # 在 Intel 核显&NVDIA_MX_x50 这种配置组合的条件下，如果使用独显渲染，因为 MX 系列独显没有解码单元，即使使用 hwdec 指定硬解实际依然只能软解
                                       # 使用此参数可使用核显硬解、辅助渲染的同时让独显主力渲染（当 hwdec=no 时快进可能造成 MPV 假死，建议使用 xxxx-copy 的解码方式）
-#d3d11-adapter="NVIDIA GeForce RTX 3060 Laptop GPU"
+#d3d11-adapter="NVIDIA GeForce RTX 2070 Super"
                                       # [当 gpu-api=d3d11 时] 指定某张显卡作为主渲染输出，默认情况下自动选择系统指定的主渲染显卡
                                       # 显卡名可查看任务管理器自行更改适配。该参数等效在驱动面板中设置以独显运行 mpv
                                       # 例如使用 I+N 的双显笔记本的内屏时，实际使用的是"Intel(R) UHD Graphics"，修改该项示例指定独显可降低任务管理器中双显卡的 3d 渲染占比
                                       # 大多数双显卡笔记本在外接显示器时，表现类似“独显直连”，此时无需该参数也会自动用独显输出
                                       # [当 gpu-api=vulkan 时] 用参数 --vulkan-device 代替 --d3d11-adapter
-#vulkan-device="NVIDIA GeForce RTX 3060 Laptop GPU"
+#vulkan-device="NVIDIA GeForce RTX 2070 Super"
                                       # [当 gpu-api=vulkan 时] 此参数代替 --d3d11-adapter 执行指定显卡的职能
                                       # 默认为空，例值 "NVIDIA GeForce RTX 2070 Super" （必须使用完整的设备名或 UUID）
 
@@ -98,7 +98,7 @@ autofit-smaller=40%x30%               # <[W[xH]]> 窗口模式下最小占屏幕
 idle=yes                              # <yes|no|默认 once> 空闲待机（中止播放或所有文件播放后依旧保持 mpv 运行）
 #untimed                              # 输出视频帧时请勿入睡。（开启后无法正确显示补帧数值）
 log-file="~~/files/mpv.log"           # 记录 log
-#ontop                                # 窗口置顶
+ontop                                 # 窗口置顶
 snap-window=yes                       # 窗口移动时捕捉窗口到屏幕边缘 (仅限 windows 系统)
 #window-affinity=default              # <默认 default|excludefromcmcapture|monitor> 控制 mpv 的窗口关联行为。excludefromcmcapture: MPV 的窗口将被外部应用程序或屏幕录制软件完全排除在捕获之外；monitor: 在 MPV 窗口外变黑
 hr-seek=yes                           # <no|absolute|default|yes|always> 选择何时使用不限于关键帧的精确跳转。此类跳转需要将视频从前一个关键帧解码到目标位置，因此可能需要一些时间，具体取决于解码性能
@@ -119,14 +119,14 @@ watch-later-options=start,vid,aid,sid
 #watch-later-options-remove=contrast  # 禁止部分参数恢复的话可使用该项来设置
                                       # 该项指定参数时目前必须单独列出，暂无法像--watch-later-options=option1,option2,...来指定，建议使用 watch-later-options 白名单来设置
 save-watch-history=yes                # <yes|默认 no> 是否保存正在播放的文件记录，然后可以通过内部的 select 脚本浏览它
-watch-history-path=~~/files/watch_history.json
+watch-history-path=~~/files/watch_history.jsonl
                                       # 存储观看历史记录的路径。默认值：~~state/watch_history.jsonl
                                       # 此文件每行包含一个 JSON 对象。它的时间字段是 UNIX timestamp，其 path 字段是规范化的 path，其 title 字段是 title（可用时）
 reset-on-next-file=vid,aid,sid,secondary-sid,vf,af,loop-file,deinterlace,contrast,brightness,gamma,saturation,hue,video-zoom,video-rotate,video-pan-x,video-pan-y,panscan,speed,audio-delay,sub-pos,sub-scale,sub-delay,sub-speed,sub-visibility,secondary-sub-visibility
                                       # 播放下一文件时需重置的更改项（色彩、画面、音轨、字幕和滤镜相关)
 input-ipc-server=\\.\pipe\mpvsocket   # input-ipc-server=<ipc_path> 开启 Ipc 功能，Linux/MacOS: input-ipc-server=/tmp/mpvsocket
                                       # 使用 SVP manager 时此项需设置为 mpvpipe 值
-demuxer-max-bytes=1024MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
+#demuxer-max-bytes=500MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
 #demuxer-readahead-secs=20            # 限制网络视频的最大缓存时间（秒数）
 #video-exts=3g2,3gp,asf,avi,bdmv,f4v,flv,h264,h265,iso,ifo,m2ts,m4v,mkv,mov,mp4,mp4v,mpeg,mpg,ogm,ogv,rm,rmvb,ts,vob,webm,wmv,y4m
                                       # 指定选项--autocreate-playlist 和--directory-filter-types 中要匹配的视频文件类型的扩展名列表
@@ -142,7 +142,8 @@ directory-mode=ignore                 # <默认 auto|recursive|lazy|ignore> 打�
 #ordered-chapters=no                  # 有序章节列表支持，默认启用，如需禁用可使用 no-ordered-chapters
                                       # 该项是对 mkv 的 chapter-links 特性的支持，禁用的话 mpv 不会加载或搜索其他文件的视频片段，并且也会忽略主文件指定的任何章节顺序
 metadata-codepage=auto                # 指定各种输入元数据的编码（默认值：auto）。这会影响文件标签、章节标题等的解释方式。例如，可以将其设置为 auto 以启用编码的自动检测（非 UTF-8 编码是一个晦涩难懂的边缘用例）
-msg-level=all=info                    # <module1=level1,module2=level2,...> 控制每个模块在控制台输出日志的详细程度，这也会影响日志文件。可用 level：<no|fatal|error|warn|info|status 默认|verbose|debug|trace>
+msg-level=all=info,auto_profiles=warn 
+                                      # <module1=level1,module2=level2,...> 控制每个模块在控制台输出日志的详细程度，这也会影响日志文件。可用 level：<no|fatal|error|warn|info|status 默认|verbose|debug|trace>
                                       # 示例为仅显示 info 及以上级别的信息。更多信息及用例参考官方手册：https://mpv.io/manual/master/#options-msg-level
 
 #######
@@ -160,11 +161,11 @@ osd-bar-align-y=-1
 #osd-fonts-dir=~~/fonts               # 指定 OSD 字体查找目录，示例即为默认值
 osd-font="Noto Sans Mono CJK SC"      # 指定 OSD 字体
 osd-font-size=24                      # 更改 OSD 字体大小（全局，影响多个功能显示的文本）（默认值：38）
-osd-color="#FFFFFFFF"                 # OSD 文本主颜色
+osd-color="#FFFFFF"                   # OSD 文本主颜色。<格式为 (AA)RRGGBB> AA 为十六进制的透明度，RRGGBB 为十六进制的颜色表示
 osd-outline-size=1.0                  # OSD 文本轮廓大小
-osd-outline-color="#FF000000"         # OSD 文本轮廓颜色
-osd-shadow-offset=0.5                 # OSD 文本字幕阴影大小
-osd-shadow-color="#FF000000"          # OSD 文本字幕阴影/背景颜色
+osd-outline-color="#1C1B1F"           # OSD 文本轮廓颜色
+osd-shadow-offset=0                   # OSD 文本字幕阴影大小
+osd-back-color="#1C1B1F"              # OSD 文本字幕阴影/背景颜色
 osd-border-style=outline-and-shadow   # <默认 outline-and-shadow|opaque-box|background-box> 文本字幕边框的样式
                                       # outline-and-shadow：绘制轮廓和阴影；opaque-box：绘制轮廓和阴影；将轮廓和阴影绘制为不透明框，紧密包裹每一行文本；background-box：绘制一个背景框，将所有文本行框框起来
 #osd-spacing=1                        # OSD 文本字幕字间距
@@ -337,8 +338,7 @@ audio-channels=7.1,5.1,stereo         # <默认值 auto-safe|auto|layouts|stereo
 ao=wasapi                             # --ao=<driver1,driver2,...[,]> 指定要使用的音频输出驱动程序的优先级列表，如果列表有尾随的 ','，mpv 将回退到未包含在列表中的驱动程序
                                       ## windows 推荐 wasapi；linux 推荐 alsa，需配合参数--audio-channels=auto；macos 推荐 coreaudio 或 coreaudio_exclusive
                                       ## 经测试如果有其他软件独占音频通道后再打开 MPV 画面会无比卡顿
-audio-buffer=360
-audio-exclusive=no                 # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
+#audio-exclusive=yes                  # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
 #volume=100                           # 播放器启动音量。0 为静音，默认 100
 #volume-max=130                       # <100.0-1000.0> 最大音量。默认值 130（130 的响度约为 100 的两倍 1.3^3≈2）
 #audio-pitch-correction=no            # [--af=scaletempo/scaletempo2/rubberband 的前置条件] 变速播放时的音调修正，默认 yes。自动插入前三项音频滤镜中其一（更多信息见滤镜区）
@@ -443,12 +443,11 @@ sub-font="Noto Sans CJK SC"                   # 指定纯文本字幕的字体�
 sub-font-size=50                              # 文本字幕字体大小
 sub-bold=yes                                  # 文本字幕使用粗体样式
 #sub-italic=yes                               # 文本字幕使用斜体样式
-sub-color="#FFFFFFFF"                         # 文本字幕字体颜色。<格式为 (AA)RRGGBB> AA 为十六进制的透明度，RRGGBB 为十六进制的颜色表示
-#sub-back-color="#FF262626"                   # 文本字幕背景颜色
+sub-color="#FFFFFF"                           # 文本字幕字体颜色。<格式为 (AA)RRGGBB> AA 为十六进制的透明度，RRGGBB 为十六进制的颜色表示
 sub-outline-size=0.5                          # 文本字幕轮廓大小
-sub-outline-color="#FF000000"                 # 文本字幕轮廓颜色
+sub-outline-color="#000000"                   # 文本字幕轮廓颜色
 sub-shadow-offset=0.5                         # 文本字幕阴影大小
-sub-shadow-color="#FF000000"                  # 文本字幕阴影/背景颜色
+sub-back-color="#000000"                      # 文本字幕阴影/背景颜色
 #sub-border-style=opaque-box                  # <默认 outline-and-shadow|opaque-box|background-box> 文本字幕边框的样式
                                               # outline-and-shadow：绘制轮廓和阴影；opaque-box：绘制轮廓和阴影；将轮廓和阴影绘制为不透明框，紧密包裹每一行文本；background-box：绘制一个背景框，将所有文本行框框起来
 #sub-spacing=1                                # 文本字幕字间距
@@ -559,13 +558,13 @@ input-default-bindings=no                                                       
 #glsl-shaders-append="~~/shaders/other/colorlevels.glsl"                        # 调整 RGB 输出范围的着色器。如需使用需按设备实际情况调整该着色器里的 REFBLACK 和 REFWHITE 值，否则输出画面可能不符合预期行为
 #glsl-shaders-append="~~/shaders/igv/KrigBilateral.glsl"                        # 高级的 cscale 色度升频算法，生效时将覆盖指定的--cscale=xxxxx 算法。目前最优秀的色度升频着色器
 #glsl-shaders-append="~~/shaders/igv/FSRCNNX_x2_8-0-4-1.glsl"                   # 快速超分辨率卷积神经网络放大算法。最小缩放触发倍率为 1.2，生效时将覆盖指定的--scale=xxxxx 算法
-#glsl-shaders-append="~~/shaders/igv/FSRCNNX_x2_8-0-4-1_LineArt.glsl"           # 快速超分辨率卷积神经网络放大算法（anime）。最小缩放触发倍率为 1.2，生效时将覆盖指定的--scale=xxxxx 算法
 #glsl-shaders-append="~~/shaders/igv/FSRCNNX_x2_16-0-4-1.glsl"                  # 快速超分辨率卷积神经网络放大算法。16x 效果更好，耗能也更高。最小缩放触发倍率为 1.2，生效时将覆盖指定的--scale=xxxxx 算法
-#glsl-shaders-append="~~/shaders/igv/FSRCNNX_x2_16-0-4-1_enhance.glsl"          # 快速超分辨率卷积神经网络放大算法。去伪影变体，最小缩放触发倍率为 1.2，生效时将覆盖指定的--scale=xxxxx 算法
-#glsl-shaders-append="~~/shaders/igv/FSRCNNX_x2_16-0-4-1_anime_enhance.glsl"    # 快速超分辨率卷积神经网络放大算法。anime 去伪影变体，最小缩放触发倍率为 1.2，生效时将覆盖指定的--scale=xxxxx 算法
+#glsl-shaders-append="~~/shaders/igv/FSRCNNX_x1_16-0-4-1_distort.glsl"          # 快速超分辨率卷积神经网络去伪影算法。去伪影变体，无触发倍率
 #glsl-shaders-append="~~/shaders/nnedi3/nnedi3-nns32-win8x4.glsl"               # 超高质量的插值放大算法。最小缩放触发倍率为 1.2，耗能极高，nns16 → nns32 → nns64 → nns128 → nns256；win8x4 → win8x6 质量更好但性能大增
 #glsl-shaders-append="~~/shaders/ravu/ravu-zoom-ar-r3.glsl"                     # ravu 放大算法 zoom 变体，通用型，触发倍率＞1，放大到目标分辨率，生效时将覆盖指定的--scale=xxxxx 算法
 #glsl-shaders-append="~~/shaders/ravu/ravu-lite-ar-r3.glsl"                     # ravu 放大算法 lite 变体，通用型，最小缩放触发倍率约为 1.2，最锐利的变体，生效时将覆盖指定的--scale=xxxxx 算法
+#glsl-shaders="~~/shaders/Ani4K/Ani4Kv2_ArtCNN_C4F32_i2.glsl"                   # Ani4k 放大算法。对于瑕疵的处理效果极好，同时尽可能保留原始画风，是比 Anime4K 更优秀的动画着色器。但性能开销极大，请量力使用
+                                                                                # 需在 --vo=gpu-next 下使用，CMP 变体只适用于 --gpu-api=vulkan
 #glsl-shaders-append="~~/shaders/Anime4K/glsl/Restore/Anime4K_Restore_CNN_Soft_M.glsl" 
                                                                                 # Anime4k 放大算法模块（适度画面修复 + 弱感知强化 + 微量伪影引入），CNN 变体最小缩放触发倍率为 1.2，推荐 Restore_CNN_Soft 抗锯齿柔化变体，减少了振铃等其他伪影的产生
                                                                                 # Anime4k 着色器介绍及用法参考：https://hooke007.github.io/mpv-lazy/[01]_%E7%AC%AC%E4%B8%89%E6%96%B9%E7%9D%80%E8%89%B2%E5%99%A8%E4%BB%8B%E7%BB%8D.html
@@ -593,10 +592,10 @@ libplacebo-opts=tone_map_metadata=cie_y
 #profile=ICC                                  # icc 色彩管理配置组，由操作系统的显示设置指定的 ICC 显示配置文件
 #profile=ICC+                                 # icc 色彩管理配置组，使用 color.org 提供的泛 icc 配置文件或专业校色文件，自行选择显示器对应色域的 icc 配置文件
 profile=Target                                # target 色彩管理配置组，不可与 icc 色彩管理共存
-#profile=Dither                                # 抖动算法配置组（fruit），效果接近 error-diffusion，耗能较低
-profile=Dither+                              # 抖动算法配置组（error-diffusion），误差扩散的色深抖动算法，效果最好也最耗能
-#profile=Tscale                                # [启用前须先注释 --tscale=<value>] 时域插值算法，具体参数见下方配置区的同名配置
-profile=Tscale+                              # [启用前须先注释 --tscale=<value>] 备选的时域插值算法，具体参数见下方配置区的同名配置
+profile=Dither                                # 抖动算法配置组（fruit），效果接近 error-diffusion，耗能较低
+#profile=Dither+                              # 抖动算法配置组（error-diffusion），误差扩散的色深抖动算法，效果最好也最耗能
+profile=Tscale                                # [启用前须先注释 --tscale=<value>] 时域插值算法，具体参数见下方配置区的同名配置
+#profile=Tscale+                              # [启用前须先注释 --tscale=<value>] 备选的时域插值算法，具体参数见下方配置区的同名配置
 profile=HQ                                    # 最常用的内置算法配置组
 profile=DeBand-low                            # [启用前需先注释 --deband] 预设的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 low，使用 low 时已有很好的效果
 #profile=DeBand-medium                        # [启用前需先注释 --deband] 备选的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 medium
@@ -606,17 +605,15 @@ profile=HDR2SDR                               # HDR 映射参数配置组
 #profile=HDR-PASS                             # HDR 直通参数配置组。HDR 直通时需禁用--icc-profile,icc-profile-auto 和--target-trc 参数。Windows 需手动切换显示器 HDR 模式（Windows 的限制）
 #profile=SWscaler                             # 备选的软件缩放方案
 
-profile=NNEDI3+
-#profile=NNEDI3                                # 适用于大多数场景（NNEDI3-32）               ## 绝大多数场景表现良好，对场景的适应性优于其他配置（抑制锯齿和振铃伪影）。喜欢通用性的优先使用此配置组
+## 以下为着色器配置组，可按需启用以下所需任一配置组（这将覆盖上面的--glsl-shaders-append 参数）
+#profile=NNEDI3                               # 适用于大多数场景（NNEDI3-32）               ## 绝大多数场景表现良好，对场景的适应性优于其他配置（抑制锯齿和振铃伪影）。喜欢通用性的优先使用此配置组
 #profile=NNEDI3+                              # 适用于大多数场景（NNEDI3-64）               ## 理论上 NNEDI3-64 及以上变体具有更好地抑制振铃伪影效果，但耗能量级倍增，视设备性能自行选择是否使用
-#profile=AMD-FSR_EASU                         # 适用于大多数场景（AMD-FSR_EASU）            ## AMD 的 FSR 算法中 EASU 变体表现良好，相对于 FSR 和 RCAS 变体产生更少的振铃伪影，同时有不错的画面效果。放大至目标分辨率
-#profile=ravu-zoom                            # 适用于大多数场景（ravu-zoom）               ## 放大到目标分辨率
+profile=ravu-zoom                             # 适用于大多数场景（ravu-zoom）               ## 放大到目标分辨率
 #profile=FSRCNNX                              # 适用于 HD 场景（FSRCNNX）                   ## 效果类似 madvr 的 NGU Sharp，但产生更多振铃伪影，在低解析画面下表现较差
-#profile=FSRCNNX+                             # 适用于 SD 场景（FSRCNNX_enhance）           ## 对低解析度的实拍类图像具有极好的抑制振铃伪影效果
-#profile=FSRCNNX-anime                        # 适用于 HD 动画（FSRCNNX-anime）             ## 效果类似 madvr 的 NGU AA，但产生更多振铃伪影，在低解析画面下表现较差
-#profile=FSRCNNX-anime+                       # 适用于 SD 动画（FSRCNNX-anime_enhance）     ## 对低解析度的 anime 类图像具有极好的抑制振铃伪影效果
+#profile=FSRCNNX+                             # 适用于 SD 场景（FSRCNNX_distort）           ## 对低解析度的画面具有极好的抑制振铃伪影效果
+#profile=Ani4K                                # 适用于大多数动画（Ani4k V2）                ## 对于瑕疵的处理效果极好，同时尽可能保留原始画风，是比 Anime4K 更优秀的动画着色器。但性能开销极大，请量力使用
+#profile=AniSD                                # 适用于 SD 动画（AniSD）                     ## 对于 SD 动画的瑕疵的处理效果极好，同时尽可能保留原始画风，是比 Anime4K 更优秀的动画着色器。但性能开销极大，请量力使用
 #profile=Anime4K                              # 适用于大多数动画（Anime4k 去伪影抗锯齿）    ## 对锯齿振铃等瑕疵可以起到较好的抑制效果，仍有明显感知度的涂抹劣化
-#profile=Anime4K+                             # 适用于 SD 动画（Anime4k 高强度抗锯齿）      ## 对 anime 类图像具有更好的抑制锯齿振铃伪影等瑕疵的效果，强度更高。UL 变体实际效果最好，但耗能极高，暂不推荐使用
 #profile=SSIM                                 # 适用于低性能消耗
 
 ##############
@@ -751,21 +748,13 @@ profile=NNEDI3+
  zimg-fast=no                       # [zimg] 以质量为代价优化性能，默认 yes
 
 
-[COMMON]
- profile-desc=自己配置
- glsl-shaders="~~/shaders/other/nlmeans.glsl;~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl;~~/shaders/igv/FSRCNNX_x2_16-0-4-1_enhance.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/AMD-FSR/AMD-FSR-EASU_rgb.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl;~~/shaders/igv/adaptive-sharpen.glsl"
-
 [NNEDI3]
  profile-desc=适用于大多数场景
- glsl-shaders="~~/shaders/nnedi3/nnedi3-nns32-win8x4.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl"
+ glsl-shaders="~~/shaders/nnedi3/nnedi3-nns32-win8x4.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimDownscaler.glsl"
 
 [NNEDI3+]
  profile-desc=适用于大多数场景
- glsl-shaders="~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl"
-
-[AMD-FSR_EASU]
- profile-desc=适用于大多数场景
- glsl-shaders="~~/shaders/igv/KrigBilateral.glsl;~~/shaders/AMD-FSR/AMD-FSR-EASU_rgb.glsl;~~/shaders/igv/SSimDownscaler.glsl"
+ glsl-shaders="~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimDownscaler.glsl"
 
 [ravu-zoom]
  profile-desc=适用于大多数场景
@@ -777,25 +766,22 @@ profile=NNEDI3+
 
 [FSRCNNX+]
  profile-desc=适用于 SD 场景
- glsl-shaders="~~/shaders/igv/FSRCNNX_x2_16-0-4-1_enhance.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl"
+ glsl-shaders="~~/shaders/igv/FSRCNNX_x1_16-0-4-1_distort.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/ravu/ravu-zoom-ar-r3.glsl;~~/shaders/igv/SSimDownscaler.glsl"
 
-[FSRCNNX-anime]
- profile-desc=适用于 HD 动画
- glsl-shaders="~~/shaders/igv/FSRCNNX_x2_8-0-4-1_LineArt.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl"
+[Ani4K]
+ profile-desc=Ani4K
+ profile-desc=适用于大多数动画
+ glsl-shaders="~~/shaders/Ani4K/Ani4Kv2_ArtCNN_C4F32_i2.glsl"
 
-[FSRCNNX-anime+]
+[AniSD]
+ profile-desc=AniSD
  profile-desc=适用于 SD 动画
- glsl-shaders="~~/shaders/igv/FSRCNNX_x2_16-0-4-1_anime_enhance.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl"
+ glsl-shaders="~~/shaders/Ani4K/AniSD_ArtCNN_C4F32_i4.glsl"
 
 [Anime4K]
  profile-desc=Anime4K
  profile-desc=适用于大多数动画
  glsl-shaders="~~/shaders/igv/KrigBilateral.glsl;~~/shaders/Anime4K/glsl/Restore/Anime4K_Restore_CNN_Soft_M.glsl;~~/shaders/Anime4K/glsl/Restore/Anime4K_Clamp_Highlights.glsl"
-
-[Anime4K+]
- profile-desc=Anime4K+
- profile-desc=适用于 SD 动画
- glsl-shaders="~~/shaders/igv/KrigBilateral.glsl;~~/shaders/Anime4K/glsl/Restore/Anime4K_Restore_CNN_Soft_VL.glsl;~~/shaders/Anime4K/glsl/Restore/Anime4K_Clamp_Highlights.glsl"
 
 [SSIM]
  profile-desc=适用于 4k 低性能
@@ -824,11 +810,11 @@ profile=NNEDI3+
 #profile-restore=copy
 #deband=no
 
-#[DVD-Anime]
-#profile-desc=2D 低清源增强
-#profile-cond=height<=576
-#profile-restore=copy
-#glsl-shaders="~~/shaders/other/FastBilateral.glsl;~~/shaders/igv/FSRCNNX_x2_8-0-4-1_LineArt.glsl;~~/shaders/igv/FSRCNNX_x2_8-0-4-1_LineArt.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl"
+[SD]
+ profile-desc=低清源增强
+ profile-cond=height <= 720 or width <= 720
+ profile-restore=copy
+ profile=FSRCNNX+
 
 [Deband]
  profile-desc=YUV420P10 以下的源开启去色带
