@@ -25,7 +25,6 @@ CTRL+ALT+v       script-message-to smartcopypaste_II paste-specific             
 #                script-message-to webtorrent toggle-info;show-text ''                                                  #menu: 打开 > Youtube-dl > 开/关 磁链 OSD
 CTRL+F           script-message-to quality_menu video_formats_toggle                                                    #menu: 打开 > Youtube-dl > 开/关 ytdl 视频选择菜单
 ALT+F            script-message-to quality_menu audio_formats_toggle                                                    #menu: 打开 > Youtube-dl > 开/关 ytdl 音频选择菜单
-ALT+Y            script-message-to youtube_download menu                                                                #menu: 打开 > Youtube-dl > 开/关 ytdl 下载菜单
 #                script-message-to quality_menu reload                                                                  #menu: 打开 > Youtube-dl > ytdl 重新加载
 #                ignore                                                                                                 #menu: 打开 > ---
 #                script-binding recentmenu/open                                                                         #menu: 打开 > 近期播放 #@recent
@@ -51,13 +50,15 @@ DEL              script-message-to delete_current_file delete-file 1  "请按 1 
 ##⇘⇘uosc 一级菜单：导航
 #                show-text ${track-list} 5000                                                                           #menu: 导航 > 打开  OSD 轨道信息
 O                no-osd cycle-values osd-level 3 1                                                                      #menu: 导航 > 开/关 显示 OSD 时间轴
+F4               script-binding select/menu;show-text ''                                                                #menu: 导航 > OSD 交互菜单 > 综合菜单
 F5               script-message-to playlistmanager showplaylist;show-text ''                                            #menu: 导航 > OSD 交互菜单 > 播放列表
-F6               script-message-to adevice_list toggle-adevice-browser;show-text ''                                     #menu: 导航 > OSD 交互菜单 > 音频设备列表
-F7               script-message-to edition_list toggle-edition-browser;show-text ''                                     #menu: 导航 > OSD 交互菜单 > 版本列表
-F8               script-message-to chapter_list toggle-chapter-browser;show-text ''                                     #menu: 导航 > OSD 交互菜单 > 章节列表
-F9               script-message-to track_list toggle-vidtrack-browser;show-text ''                                      #menu: 导航 > OSD 交互菜单 > 视频轨列表
-F10              script-message-to track_list toggle-audtrack-browser;show-text ''                                      #menu: 导航 > OSD 交互菜单 > 音频轨列表
-F11              script-message-to track_list toggle-subtrack-browser;show-text ''                                      #menu: 导航 > OSD 交互菜单 > 字幕轨列表
+F6               script-binding select/select-audio-device;show-text ''                                                 #menu: 导航 > OSD 交互菜单 > 音频设备列表
+#                script-binding select/select-edition;show-text ''                                                      #menu: 导航 > OSD 交互菜单 > 版本列表
+F7               script-binding select/select-chapter;show-text ''                                                      #menu: 导航 > OSD 交互菜单 > 章节列表
+F8               script-binding select/select-track;show-text ''                                                        #menu: 导航 > OSD 交互菜单 > 轨道列表
+F9               script-binding select/select-vid;show-text ''                                                          #menu: 导航 > OSD 交互菜单 > 视频轨列表
+F10              script-binding select/select-aid;show-text ''                                                          #menu: 导航 > OSD 交互菜单 > 音频轨列表
+F11              script-binding select/select-sid;show-text ''                                                          #menu: 导航 > OSD 交互菜单 > 字幕轨列表
 ALT+c            script-message-to chapter_make_read create_chapter                                                     #menu: 导航 > 章节制作 > 标记章节时间
 ALT+e            script-message-to chapter_make_read edit_chapter                                                       #menu: 导航 > 章节制作 > 编辑章节标题
 ALT+r            script-message-to chapter_make_read remove_chapter                                                     #menu: 导航 > 章节制作 > 删除当前章节
@@ -216,9 +217,10 @@ p                cycle sub-gray;show-text "pgs 字幕灰度转换:${sub-gray}"  
 Y                script-message sub-select toggle                                                                       #menu: 字幕 > 切换 字幕选择脚本
 CTRL+d           script-message-to sub_assrt sub-assrt                                                                  #menu: 字幕 > 打开 字幕下载菜单
 CTRL+m           script-message-to autosubsync autosubsync-menu                                                         #menu: 字幕 > 打开 字幕同步菜单
-CTRL+M           script-binding subtitle_lines/list_subtitles                                                           #menu: 字幕 > 打开 字幕内容菜单
+CTRL+M           script-binding select/select-subtitle-line                                                             #menu: 字幕 > 打开 字幕内容菜单
 ALT+m            script-message-to sub_export export-selected-subtitles                                                 #menu: 字幕 > 导出当前内封字幕
 ALT+f            script-message-to sub_fastwhisper sub-fastwhisper                                                      #menu: 字幕 > 生成 AI 字幕
+#                script-message-to sub_fastwhisper sub-translate                                                        #menu: 字幕 > 翻译当前 srt 字幕
 #                ignore                                                                                                 #menu: 字幕 > ---
 r                add sub-pos -1;show-text "字幕上移:${sub-pos}"                                                         #menu: 字幕 > 其他操作 > 字幕上移
 t                add sub-pos +1;show-text "字幕下移:${sub-pos}"                                                         #menu: 字幕 > 其他操作 > 字幕下移
@@ -234,7 +236,6 @@ SHIFT+BS         set sub-pos 100;set sub-scale 1.0;set sub-delay 0;show-text "�
 
 ##⇘⇘uosc 一级菜单：视频滤镜
 CTRL+`           vf clr ""                                                                                              #menu: 视频滤镜 > 清空
-CTRL+j           vf toggle lavfi=graph=hqdn3d                                                                           #menu: 视频滤镜 > 开/关 hqdn3d 降噪滤镜
 ALT+v            vf toggle deblock=filter=weak:block=4                                                                  #menu: 视频滤镜 > 开/关 去色块滤镜
 !                vf toggle format=colorlevels=limited                                                                   #menu: 视频滤镜 > 开/关 动态范围限制
 @                vf toggle vflip                                                                                        #menu: 视频滤镜 > 开/关 垂直翻转
@@ -251,13 +252,10 @@ CTRL+1           change-list glsl-shaders toggle "~~/shaders/igv/KrigBilateral.g
 CTRL+2           change-list glsl-shaders toggle "~~/shaders/igv/SSimSuperRes.glsl"                                     #menu: 着色器 > IGV > 开/关 SSimSuperRes
 CTRL+3           change-list glsl-shaders toggle "~~/shaders/igv/SSimDownscaler.glsl"                                   #menu: 着色器 > IGV > 开/关 SSimDownscaler
 CTRL+4           change-list glsl-shaders toggle "~~/shaders/igv/adaptive-sharpen.glsl"                                 #menu: 着色器 > IGV > 开/关 自适应锐化
-#                change-list glsl-shaders toggle "~~/shaders/AMD-FSR/AMD-FSR.glsl"                                      #menu: 着色器 > AMD > 开/关 FSR
-CTRL+5           change-list glsl-shaders toggle "~~/shaders/AMD-FSR/AMD-FSR-EASU_rgb.glsl"                             #menu: 着色器 > AMD > 开/关 FSR-EASU
-CTRL+6           change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x2_8-0-4-1.glsl"                               #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX
-#                change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x2_8-0-4-1_LineArt.glsl"                       #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX-LineArt
+#                change-list glsl-shaders toggle "~~/shaders/igv/adaptive-sharpen_luma.glsl"                            #menu: 着色器 > IGV > 开/关 自适应锐化-luma
+CTRL+5           change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x2_8-0-4-1.glsl"                               #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX
 #                change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x2_16-0-4-1.glsl"                              #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX-16x
-#                change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x2_16-0-4-1_enhance.glsl"                      #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX-enhance
-#                change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x2_16-0-4-1_anime_enhance.glsl"                #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX-anime-enhance
+CTRL+6           change-list glsl-shaders toggle "~~/shaders/igv/FSRCNNX_x1_16-0-4-1_distort.glsl"                      #menu: 着色器 > FSRCNNX > 开/关 FSRCNNX-distort
 CTRL+7           change-list glsl-shaders toggle "~~/shaders/nnedi3/nnedi3-nns32-win8x4.glsl"                           #menu: 着色器 > NNEDI3 > 开/关 nns32-4
 #                change-list glsl-shaders toggle "~~/shaders/nnedi3/nnedi3-nns32-win8x6.glsl"                           #menu: 着色器 > NNEDI3 > 开/关 nns32-6
 #                change-list glsl-shaders toggle "~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl"                           #menu: 着色器 > NNEDI3 > 开/关 nns64-4
@@ -276,28 +274,18 @@ CTRL+9           change-list glsl-shaders toggle "~~/shaders/Anime4K/glsl/Restor
 #                change-list glsl-shaders toggle "~~/shaders/Anime4K/glsl/Deblur/Anime4K_Deblur_DoG.glsl"               #menu: 着色器 > Anime4K > 开/关 Anime4K 去糊
 #                change-list glsl-shaders toggle "~~/shaders/Anime4K/glsl/Upscale/Anime4K_Upscale_CNN_x2_S.glsl"        #menu: 着色器 > Anime4K > 开/关 Anime4K 放大
 #                change-list glsl-shaders toggle "~~/shaders/other/PixelClipper.glsl"                                   #menu: 着色器 > Other > 开/关 抗振铃
-CTRL+D           script-message cycle-commands "set deband no;change-list glsl-shaders pre '~~/shaders/other/hdeband.glsl'" "change-list glsl-shaders remove '~~/shaders/other/hdeband.glsl'"  #menu: 着色器 > Other > 开/关 去色带
-CTRL+J           script-message cycle-commands "change-list glsl-shaders pre '~~/shaders/other/nlmeans.glsl'" "change-list glsl-shaders remove '~~/shaders/other/nlmeans.glsl'"                #menu: 着色器 > Other > 开/关 nlmeans 降噪
-#                script-message cycle-commands "change-list glsl-shaders pre '~~/shaders/other/nlmeans_luma.glsl'" "change-list glsl-shaders remove '~~/shaders/other/nlmeans_luma.glsl'"      #menu: 着色器 > Other > 开/关 nlmeans-luma 降噪
-#                script-message cycle-commands "change-list glsl-shaders pre '~~/shaders/other/nlmeans_light.glsl'" "change-list glsl-shaders remove '~~/shaders/other/nlmeans_light.glsl'"    #menu: 着色器 > Other > 开/关 nlmeans-light 降噪
-#                script-message cycle-commands "change-list glsl-shaders pre '~~/shaders/other/nlmeans_hq.glsl'" "change-list glsl-shaders remove '~~/shaders/other/nlmeans_hq.glsl'"          #menu: 着色器 > Other > 开/关 nlmeans-hq 降噪
+CTRL+j           script-message cycle-commands "change-list glsl-shaders pre '~~/shaders/other/nlmeans_luma.glsl'" "change-list glsl-shaders remove '~~/shaders/other/nlmeans_luma.glsl'"      #menu: 着色器 > Other > 开/关 nlmeans-luma 降噪
 
 ##⇘⇘uosc 一级菜单：其它
-CTRL+P           script-message cycle-commands "apply-profile FSRCNNX;show-text 配置组：FSRCNNX" "apply-profile AMD-FSR_EASU;show-text 配置组：AMD-FSR_EASU" "apply-profile NNEDI3;show-text 配置组：NNEDI3" "apply-profile ravu-zoom;show-text 配置组：ravu-zoom" "apply-profile Anime4K;show-text 配置组：Anime4K" #menu: 其它 > 常规配置组 > 切换 指定配置组
-
-ALT+0        change-list glsl-shaders set "~~/shaders/nnedi3/nnedi3-nns64-win8x4.glsl;~~/shaders/igv/KrigBilateral.glsl;~~/shaders/igv/SSimSuperRes.glsl;~~/shaders/igv/SSimDownscaler.glsl;~~/shaders/AMD-FSR/AMD-FSR.glsl;~~/shaders/Anime4K/glsl/Denoise/Anime4K_Denoise_Bilateral_Mode.glsl;~~/shaders/Anime4K/glsl/Deblur/Anime4K_Deblur_DoG.glsl;~~/shaders/other/nlmeans.glsl"     #menu: 其它 > 常规配置组 > 切换常规配置
-
+CTRL+P           script-message cycle-commands "apply-profile FSRCNNX;show-text 配置组：FSRCNNX" "apply-profile FSRCNNX+;show-text 配置组：FSRCNNX+" "apply-profile NNEDI3;show-text 配置组：NNEDI3" "apply-profile ravu-zoom;show-text 配置组：ravu-zoom" "apply-profile Anime4K;show-text 配置组：Anime4K" #menu: 其它 > 常规配置组 > 切换 指定配置组
 ALT+1            apply-profile FSRCNNX;show-text "配置组：FSRCNNX"                                                      #menu: 其它 > 常规配置组 > 切换 FSRCNNX 配置
 ALT+2            apply-profile FSRCNNX+;show-text "配置组：FSRCNNX+"                                                    #menu: 其它 > 常规配置组 > 切换 FSRCNNX+ 配置
-ALT+3            apply-profile FSRCNNX-anime;show-text "配置组：FSRCNNX-anime"                                          #menu: 其它 > 常规配置组 > 切换 FSRCNNX-anime 配置
-ALT+4            apply-profile FSRCNNX-anime+;show-text "配置组：FSRCNNX-anime+"                                        #menu: 其它 > 常规配置组 > 切换 FSRCNNX-anime+ 配置
-ALT+5            apply-profile ravu-zoom;show-text "配置组：ravu-zoom"                                                  #menu: 其它 > 常规配置组 > 切换 Ravu-zoom 配置
-#                apply-profile ravu-3x;show-text "配置组：ravu-3x"                                                      #menu: 其它 > 常规配置组 > 切换 Ravu-3x 配置
+ALT+3            apply-profile ravu-zoom;show-text "配置组：ravu-zoom"                                                  #menu: 其它 > 常规配置组 > 切换 Ravu-zoom 配置
+ALT+4            apply-profile Ani4K;show-text "配置组：Ani4K"                                                          #menu: 其它 > 常规配置组 > 切换 Ani4K 配置
+ALT+5            apply-profile AniSD;show-text "配置组：AniSD"                                                          #menu: 其它 > 常规配置组 > 切换 AniSD 配置
 ALT+6            apply-profile Anime4K;show-text "配置组：Anime4K"                                                      #menu: 其它 > 常规配置组 > 切换 Anime4k 配置
-#                apply-profile Anime4K+;show-text "配置组：Anime4K+"                                                    #menu: 其它 > 常规配置组 > 切换 Anime4k+ 配置
 ALT+7            apply-profile NNEDI3;show-text "配置组：NNEDI3"                                                        #menu: 其它 > 常规配置组 > 切换 NNEDI3 配置
 ALT+8            apply-profile NNEDI3+;show-text "配置组：NNEDI3+"                                                      #menu: 其它 > 常规配置组 > 切换 NNEDI3+ 配置
-ALT+9            apply-profile AMD-FSR_EASU;show-text "配置组：AMD-FSR_EASU"                                            #menu: 其它 > 常规配置组 > 切换 AMD-FSR_EASU 配置
 #                apply-profile SSIM;show-text "配置组：SSIM"                                                            #menu: 其它 > 常规配置组 > 切换 SSIM 配置
 #                cycle border;show-text "显示边框:${border}"                                                            #menu: 其它 > 切换 边框模式  #@state=(border and 'checked')
 CTRL+B           cycle title-bar;show-text "显示标题栏:${title-bar}"                                                    #menu: 其它 > 切换 标题栏    #@state=(title_bar and 'checked')
@@ -307,13 +295,14 @@ CTRL+R           cycle-values   reset-on-next-file "all" "no" "vf,af,loop-file,d
 
 ##⇘⇘uosc 一级菜单：工具
 Ctrl+p           script-message-to command_palette show-command-palette "Command Palette"    						    #menu: 工具 > 打开命令面板
-#                script-message-to uosc keybinds                                                                        #menu: 工具 > 查看键绑定面板
-#                script-message set-clipboard ${filename}                                                               #menu: 工具 > 复制文件信息 > 复制当前文件名
-#                script-message set-clipboard ${path}                                                                   #menu: 工具 > 复制文件信息 > 复制当前文件路径
-CTRL+ALT+t       script-message set-clipboard ${time-pos}                                                               #menu: 工具 > 复制文件信息 > 复制当前时间
-CTRL+ALT+s       script-message set-clipboard ${sub-text}                                                               #menu: 工具 > 复制文件信息 > 复制当前字幕内容
+#                set clipboard/text ${filename}                                                                         #menu: 工具 > 复制文件信息 > 复制当前文件名
+#                set clipboard/text ${path}                                                                             #menu: 工具 > 复制文件信息 > 复制当前文件路径
+CTRL+ALT+t       set clipboard/text ${time-pos}                                                                         #menu: 工具 > 复制文件信息 > 复制当前时间
+CTRL+ALT+s       set clipboard/text ${sub-text}                                                                         #menu: 工具 > 复制文件信息 > 复制当前字幕内容
 #                script-message-to uosc open-config-directory                                                           #menu: 工具 > 定位配置文件
 M                script-message manager-update-all ;show-text "更新脚本着色器"                                          #menu: 工具 > 一键更新脚本和着色器
+ALT+d            script-message-to trakt_scrobble search-menu                                                           #menu: 工具 > 打开 trakt 搜索菜单
+ALT+D            script-message-to trakt_scrobble toggle-scrobble                                                       #menu: 工具 > 开/关 trakt 同步记录
 #                ignore                                                                                                 #menu: ---
 
 ##⇘⇘uosc 一级菜单
