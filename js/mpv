@@ -27,7 +27,7 @@ gpu-api=d3d11                         # <opengl/vulkan/d3d11> [SVP 补帧时推�
 #d3d11va-zero-copy=yes                # [当 gpu-api=d3d11 时] 默认情况下，当使用带有--gpu-api=d3d11 的硬件解码时，视频图像将从解码器表面复制（GPU 到 GPU）到着色器资源。
                                       # 设置此选项可通过直接从解码器图像采样来避免复制。这可能会提高性能并降低功耗，但可能会由于填充而导致图像在底部和右侧边缘采样不正确，并可能引发驱动程序错误，因为 Direct3D 11 从技术上不允许从解码器表面采样（尽管大多数驱动程序支持。）               
                                       # 当解码卡顿掉帧时可启用此项尝试改善
-hwdec=auto-copy                       # 指定应使用的硬件视频解码 API，软解改为 no，Windows 上的硬解建议使用 d3d11va 或 d3d12va-copy。d3d11va 具有最好的硬件解码支持，提供了 av1 格式的 4k60 帧和 8k 下的原生硬解加速。nvdec 虽然支持 yuv444 硬解，但该格式较为少见而且软解下并无压力
+hwdec=no                       # 指定应使用的硬件视频解码 API，软解改为 no，Windows 上的硬解建议使用 d3d11va 或 d3d12va-copy。d3d11va 具有最好的硬件解码支持，提供了 av1 格式的 4k60 帧和 8k 下的原生硬解加速。nvdec 虽然支持 yuv444 硬解，但该格式较为少见而且软解下并无压力
                                       # --hwdec=auto-safe 等效 --hwdec=yes。当 --gpu-api=d3d11 时，值 auto 首选 d3d11va；当 --gpu-api=vulkan 时，值 auto 首选 nvdec。auto-copy 首选 d3d11va-copy
                                       # 不推荐选用理论上解码效率最高的无-copy 的原生硬解，目的是确保全部设置/滤镜/着色器正常作用（有些不支持）。注意无-copy 的 nvdec 硬解不支持 d3d11，只支持 vulkan 和 opengl
                                       ## 也可以使用多个值组成的优先级列表，例如值 vulkan-copy,nvdec-copy,auto 表示依次尝试这些解码模式
@@ -126,7 +126,8 @@ reset-on-next-file=vid,aid,sid,secondary-sid,vf,af,loop-file,deinterlace,contras
                                       # 播放下一文件时需重置的更改项（色彩、画面、音轨、字幕和滤镜相关)
 input-ipc-server=\\.\pipe\mpvsocket   # input-ipc-server=<ipc_path> 开启 Ipc 功能，Linux/MacOS: input-ipc-server=/tmp/mpvsocket
                                       # 使用 SVP manager 时此项需设置为 mpvpipe 值
-#demuxer-max-bytes=500MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
+demuxer-max-bytes=1000MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
+demuxer-max-back-bytes=500MiB
 #demuxer-readahead-secs=20            # 限制网络视频的最大缓存时间（秒数）
 #video-exts=3g2,3gp,asf,avi,bdmv,f4v,flv,h264,h265,iso,ifo,ivf,m2ts,m4v,mkv,mov,mp4,mp4v,mpeg,mpg,ogm,ogv,rm,rmvb,ts,vob,webm,wmv,y4m
                                       # 指定选项--autocreate-playlist 和--directory-filter-types 中要匹配的视频文件类型的扩展名列表
@@ -211,16 +212,14 @@ osd-duration=2000                     # 设置（全局）OSD 文本信息的持
 ##⇘⇘以下为 target 色彩管理相关参数设置
 #target-prim=auto                     # 广色域屏应该设定此参数为具体值以解决色彩过饱和的问题，当不使用 ICC 色彩管理时，视频颜色将适应此色彩空间。srgb 屏无需更改此默认值（bt.709），其他举例：99% 的 argb 屏幕写 adobe，90%+的 p3 色域屏写 dci-p3
                                       # 使用--target-prim=<value> 参数管理色彩空间时会导致 hdr 下出现偏色问题，hdr 映射时启用--gamut-mapping-mode=clip 参数可解决该问题  https://github.com/mpv-player/mpv/issues/9071
-                                      #! 注意：Win11 24H2 版本后，若已开启系统的 HDR 或 ACM（自动色彩管理）功能不要更改此项，否则会产生色域重复缩限导致色彩欠饱和
 #target-gamut=dci-p3                  # 明确限制显示器的色域。您可以使用此选项来限制输出色域，例如 DCIP3-in-BT.2020; 将 `--target-prim` 设置为色彩空间规格，并将 `--target-gamut` 设置为要限制的输出色域。取决与 `--target-prim`。（仅适用于 `--vo=gpu-next`)
-                                      #! 注意：Win11 24H2 版本后，若已开启系统的 HDR 或 ACM（自动色彩管理）功能不要更改此项，否则会产生色域重复缩限导致色彩欠饱和
 #target-trc=gamma2.2                  # 指定显示屏的传输特性（伽马），未使用 icc 色彩管理时生效。默认值 auto：在--vo=gpu 下 hdr 下使用 gamma2.2，sdr 下不做处理；在--vo=gpu-next 下始终使用 bt.1886 曲线（假设无限对比度，即 oled）
                                       # 建议非 oled 和 hdr 的显示器始终使用 gamma2.2 曲线，避免 mpv 画面过暗。hdr 直通时此项需使用 auto 或 pq 值
 #target-contrast=auto                 # <auto|10-1000000|inf> 指定输出显示的测量对比度。此项与--target-peak 结合用于计算显示黑点，用于 HDR 色调映射期间的黑点补偿
                                       # 默认值是 auto，假定 1000:1 对比度（视为典型的 SDR 显示器），当直通 HDR 时，将具有无限的对比度。inf 对比度指定了具有完美黑电平的显示能力，即 OLED 显示器
 #target-peak=auto                     # <auto|nits> 指定输出显示器的测量峰值亮度。受--target-trc 参数影响，默认值 auto：根据 trc 参数使用适当值，sdr 默认为 203，hdr 下建议根据实际显示效果指定具体 nits 值
                                       # 当使用 icc 色彩管理时，若 nits 设置为高于默认值（203），显示器将被 mpv 视为 hdr 屏处理
-                                      #! 注意：若已开启系统的 HDR 显示模式则此项在 SDR 内容下必须设置为 203，否则会导致画面严重偏暗。HDR 内容下需使用 auto 或峰值亮度值
+                                      # --vo=gpu-next 下尽可能不要修改此参数避免画面表现异常
 ##⇘⇘以下为 3dlut 相关参数
 #lut=<file>                           # [当 --vo=gpu-next 时生效] ，指定自定义 LUT（Adobe .cube 格式）作为颜色转换的一部分应用于颜色。确切的方式取决于--lut-type
 #lut-type=conversion                  # [当启用--lut=<file>时生效] ，<默认 auto|native|normalized|conversion> ，控制传入和传出指定为--lut 的 LUT 的颜色值的方式
@@ -340,6 +339,7 @@ audio-channels=7.1,5.1,stereo         # <默认值 auto-safe|auto|layouts|stereo
                                       # 示例参数 7.1,5.1,stereo 为常见音频输出设备的优先级顺序，会自动回退选择符合实际音频输出设备的输出值（大多数使用的是 stereo 双声道设备）
                                       # 多声道音轨下混成双声道时，如果觉得背景音过响，角色台词声音小，尝试看看这个：https://github.com/mpv-player/mpv/issues/6563 
 ao=wasapi                             # --ao=<driver1,driver2,...[,]> 指定要使用的音频输出驱动程序的优先级列表，如果列表有尾随的 ','，mpv 将回退到未包含在列表中的驱动程序
+audio-buffer=10
                                       ## windows 推荐 wasapi；linux 推荐 alsa，需配合参数--audio-channels=auto；macos 推荐 coreaudio 或 coreaudio_exclusive
                                       ## 经测试如果有其他软件独占音频通道后再打开 MPV 画面会无比卡顿
 #audio-exclusive=yes                  # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
@@ -504,7 +504,7 @@ gpu-shader-cache-dir="~~/cache/shaders_cache"                                   
 #load-stats-overlay=no                                                          # 启用 mpv 内置的统计信息脚本 [stats.lua]，默认 yes
 #load-select=no                                                                 # 启用 mpv 内置的选择菜单脚本 [select.lua]，默认 yes
 #ytdl=no                                                                        # 启用 mpv 内置的网址解析增强脚本 [ytdl-hook.lua]，默认 yes
-ytdl-format=bestvideo*+bestaudio/best                                           # <ytdl|best|worst|mp4|webm|...> 直接传递给 youtube-dl 的视频格式/质量。默认值：bestvideo+bestaudio/best
+#ytdl-format=bestvideo+bestaudio/best                                           # <ytdl|best|worst|mp4|webm|...> 直接传递给 youtube-dl 的视频格式/质量。默认值：bestvideo+bestaudio/best
                                                                                 ## ytdl 不会将 --format 选项传递给 youtube-dl，因此不会覆盖其默认值。请注意，有时 youtube-dl 会返回 mpv 无法使用的格式，在这些情况下，mpv 默认值可能会更好
 #ytdl-extract-chapters=no                                                       # <默认 yes|no> 启用从 youtube-dl 视频描述中提取章节
 #ytdl-raw-options=sub-langs="zh.*",write-subs=,write-auto-subs=
@@ -605,10 +605,9 @@ profile=HQ                                    # 最常用的内置算法配置�
 profile=DeBand-low                            # [启用前需先注释 --deband] 预设的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 low，使用 low 时已有很好的效果
 #profile=DeBand-medium                        # [启用前需先注释 --deband] 备选的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 medium
 #profile=DeBand-high                          # [启用前需先注释 --deband] 备选的去色带方案，具体参数见下方配置区的同名配置，接近 madvr 的 deband 设为 high
-profile=HDR2SDR                               # HDR 映射 SDR 参数配置组
-                                              # 此配置组不会影响 HDR 设备下的 HDR 直通配置，需要配置 HDR 直通时无需注释此配置组，会影响 SDR 内容的显示
-                                              # HDR 直通下依然有可能应用到此配置组中的动态映射和算法（HDR 画面亮度超出显示器峰值亮度时）
-#profile=SDR2HDR                              # SDR 映射 HDR 参数配置组，仅在 HDR 显示模式下有效，不推荐启用。仅限--vo=gpu-next 下可用
+#profile=SDR2HDR                              # SDR 映射 HDR 参数配置组，仅在 hdr 设备上有效，不推荐启用。仅限--vo=gpu-next 下可用
+profile=HDR2SDR                               # HDR 映射参数配置组
+#profile=HDR-PASS                             # HDR 直通参数配置组。HDR 直通时需禁用--icc-profile,icc-profile-auto 和--target-trc 参数。Windows 需手动切换显示器 HDR 模式（Windows 的限制）
 #profile=SWscaler                             # 备选的软件缩放方案
 
 ## 以下为着色器配置组，可按需启用以下所需任一配置组（这将覆盖上面的--glsl-shaders-append 参数）
@@ -648,9 +647,9 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  icc-profile=""
  icc-profile-auto=no
  target-prim=auto
- #target-trc=gamma2.2
- #target-peak=203
+ target-trc=gamma2.2
  target-contrast=auto
+ target-peak=auto
 
 [Dither]
  dither-depth=auto
@@ -678,9 +677,9 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  tscale-blur=0.65
 
 [HQ]
- scale=ewa_lanczossharp
- cscale=bilinear
- dscale=catmull_rom
+ scale=ewa_lanczos4sharpest
+ cscale=ewa_lanczos4sharpest
+ dscale=ewa_lanczos4sharpest
  scale-antiring=0.5
  dscale-antiring=0.5
  linear-upscaling=no
@@ -711,9 +710,12 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  deband-range=16
  deband-grain=24
 
+[SDR2HDR]
+ profile-desc=SDR 反向映射 HDR 参数
+ inverse-tone-mapping=yes
+
 [HDR2SDR]
  profile-desc=HDR-SDR 映射参数
- target-peak=203
  target-colorspace-hint=no
  tone-mapping=auto
  #tone-mapping-param=1.0
@@ -723,21 +725,14 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  #hdr-contrast-smoothness=3.5
  hdr-compute-peak=auto
  hdr-peak-percentile=99.995
- hdr-peak-decay-rate=100
- hdr-scene-threshold-low=5.5
- hdr-scene-threshold-high=10
+ hdr-peak-decay-rate=20
+ hdr-scene-threshold-low=1.0
+ hdr-scene-threshold-high=3.0
  allow-delayed-peak-detect=no
 
-[SDR2HDR]
- profile-desc=SDR 反向映射 HDR 参数
- icc-profile=""
- icc-profile-auto=no
- target-prim=auto
- #target-gamut=dci-p3   # 或 adobe，用于 argb 色域
- target-trc=auto
- target-peak=auto  # --gpu-api=vulkan 下必须指定显示器的峰值亮度值，--gpu-api=d3d11 下默认值会自动获取此信息
+[HDR-PASS]
+ profile-desc=HDR 直通参数
  target-colorspace-hint=auto
- inverse-tone-mapping=yes
 
 ##⇘⇘备选的软件缩放方案
 ##在 mpv 内部需要执行格式转换时会用到软件缩放器
@@ -842,36 +837,25 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
 #profile-restore=copy
 #tone-mapping-param=1.0
 
-[peak-percentile]
- profile-cond=get("video-params/avg-pq-y") < 0.21 and p.current_vo == "gpu-next"
- profile-restore=copy
- hdr-peak-percentile=99.8
+#[DoVi-P5]
+#profile-desc=DoVi-P5 转换 HDR 直通
+#profile-cond=get("video-params/colormatrix") == "dolbyvision" and get("video-params/colorlevels") == "full"
+#profile-restore=copy
+#target-trc=bt.2020
+#target-gamut=dci-p3
+#target-trc=pq
 
 [HDR]
  profile-desc=HDR 配置
- profile-cond=get("video-params/max-luma") > 203
+ profile-cond=get("video-out-params/max-luma") > 203
  profile-restore=copy
- target-peak=auto
- target-colorspace-hint=auto
- inverse-tone-mapping=no   # HDR 下不可启用反向映射功能
+ #icc-profile=""
+ #icc-profile-auto=no
+ #target-trc=auto
+ #target-peak=100
  blend-subtitles=no
  deband=no
  vf=""
-
-[HDR-PASS]
- #--gpu-api=vulkan 下无法自动获取显示器的峰值亮度和对比度信息，故难以实现正确的 HDR 直通（可以强行传递）
- profile-desc=HDR 直通参数，仅在 HDR 显示模式和--gpu-api=d3d11 下生效
- profile-cond=get("video-params/max-luma") > 203 and get("video-target-params/max-luma") > 203 and p.current_vo == "gpu-next"
- profile-restore=copy
- icc-profile=""
- icc-profile-auto=no
- target-colorspace-hint=auto
- inverse-tone-mapping=no   # HDR 下不可启用反向映射功能
- target-prim=auto
- #target-gamut=dci-p3      # 或 adobe，用于 argb 色域
- target-trc=auto
- #target-contrast=auto     # 或可指定 HDR 显示器的对比度值，默认值会自动获取此信息
- #target-peak=auto         # 或可指定 HDR 显示器的峰值亮度值，默认值会自动获取此信息
 
 [SDR-Gamut]
  profile-desc=SDR 内容的色域映射
@@ -885,11 +869,11 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  profile-restore=copy-equal
  video-sync=display-tempo
 
-[fps-fix]
- profile-desc=修复视频帧率和显示刷新率过高引起的异常耗能或掉帧
- profile-cond=get("estimated-vf-fps") > 47 or get("display-fps") > 120
- profile-restore=copy
- video-sync=audio
+#[fps-fix]
+# profile-desc=修复视频帧率和显示刷新率过高引起的异常耗能或掉帧
+# profile-cond=get("estimated-vf-fps") > 47 or get("display-fps") > 120
+# profile-restore=copy
+# video-sync=audio
 
 [8k-fix]
  profile-desc=8k av1 下使用 d3d11va 硬解来解决掉帧问题，该方案仅限 --gpu-api=d3d11 下可用
