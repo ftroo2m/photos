@@ -8,7 +8,7 @@
 ########
 
 ## 解码
-vo=gpu-next                           # <gpu/gpu-next/libmpv> 视频输出驱动。许多后续选项也只能在此三项下正常工作。当前版本默认值即 gpu
+vo=gpu-next                           # <gpu/gpu-next/libmpv> 视频输出驱动。许多后续选项也只能在此三项下正常工作。当前版本默认值即 gpu-next
                                       ## gpu 具有最高普适性和完成度；gpu-next 查看此处讨论 https://github.com/hooke007/MPV_lazy/discussions/39；libmpv为部分前端设计，一般不使用
                                       ## gpu-next 具有更好的前景，目前已实现杜比视界 RPU 层元数据的解析映射，尚不支持 EL 层元数据解析
                                       ## gpu-next 和 gpu 之间的具体区别见官方 wiki 相关说明：https://github.com/mpv-player/mpv/wiki/GPU-Next-vs-GPU
@@ -27,7 +27,7 @@ gpu-api=d3d11                         # <opengl/vulkan/d3d11> [SVP 补帧时推�
 #d3d11va-zero-copy=yes                # [当 gpu-api=d3d11 时] 默认情况下，当使用带有--gpu-api=d3d11 的硬件解码时，视频图像将从解码器表面复制（GPU 到 GPU）到着色器资源。
                                       # 设置此选项可通过直接从解码器图像采样来避免复制。这可能会提高性能并降低功耗，但可能会由于填充而导致图像在底部和右侧边缘采样不正确，并可能引发驱动程序错误，因为 Direct3D 11 从技术上不允许从解码器表面采样（尽管大多数驱动程序支持。）               
                                       # 当解码卡顿掉帧时可启用此项尝试改善
-hwdec=no                       # 指定应使用的硬件视频解码 API，软解改为 no，Windows 上的硬解建议使用 d3d11va 或 d3d12va-copy。d3d11va 具有最好的硬件解码支持，提供了 av1 格式的 4k60 帧和 8k 下的原生硬解加速。nvdec 虽然支持 yuv444 硬解，但该格式较为少见而且软解下并无压力
+hwdec=auto-copy                       # 指定应使用的硬件视频解码 API，软解改为 no，Windows 上的硬解建议使用 d3d11va 或 d3d12va-copy。d3d11va 具有最好的硬件解码支持，提供了 av1 格式的 4k60 帧和 8k 下的原生硬解加速。nvdec 虽然支持 yuv444 硬解，但该格式较为少见而且软解下并无压力
                                       # --hwdec=auto-safe 等效 --hwdec=yes。当 --gpu-api=d3d11 时，值 auto 首选 d3d11va；当 --gpu-api=vulkan 时，值 auto 首选 nvdec。auto-copy 首选 d3d11va-copy
                                       # 不推荐选用理论上解码效率最高的无-copy 的原生硬解，目的是确保全部设置/滤镜/着色器正常作用（有些不支持）。注意无-copy 的 nvdec 硬解不支持 d3d11，只支持 vulkan 和 opengl
                                       ## 也可以使用多个值组成的优先级列表，例如值 vulkan-copy,nvdec-copy,auto 表示依次尝试这些解码模式
@@ -73,8 +73,12 @@ input-ime=no                          # <yes|默认 no> 是否启用全局 IME �
 window-corners=roundsmall             # <default|donotround|round|roundsmall> 控制窗口圆角的首选项。default: 让系统决定是否圆角; donotround: 禁用圆角；round: 启用圆角；roundsmall: 启用半径较小的圆角
 #window-maximized=yes                 # 运行 MPV 自动窗口最大化（无边框界面时的最大化类似“无边窗口模式”而非“全屏”）
 #background=none                      # <none|color|默认 tiles> 如果帧具有 alpha 通道，指定使用哪种背景方式（如果有）与它混合。如果没有 alpha 通道，则不执行任何操作
-                                      ## none: 不要混合帧并保持 alpha 原样；color: 将帧与背景颜色混合（由--background-color 指定，默认为黑色）；tiles: 将帧与 16x16 灰色/白色瓷砖背景混合
-#background-color="#778899"           # <格式为 (AA)RRGGBB> 用于绘制视频未覆盖的 mpv 窗口部分的颜色
+                                      ## none: 不要混合帧并保持 alpha 原样；color: 将帧与背景颜色混合（由--background-color 指定，默认为黑色）
+                                      ## tiles: 将帧与 16x16 与指定颜色的棋盘格图案混合，由 --background-tile-color-0 和 --background-tile-color-1 指定（默认为灰色和白色）
+#background-color="#778899"           # <格式为 (AA)RRGGBB> 在 --background=color 模式下，用于绘制 mpv 窗口未被视频覆盖的部分的颜色
+#background-tile-color-0="#778899"    # <格式为 (AA)RRGGBB> 在 --background=tiles 模式下，用于绘制 mpv 窗口未被视频覆盖的部分的颜色
+#background-tile-color-1="#778899"    # <格式为 (AA)RRGGBB> 在 --background=tiles 模式下，用于绘制 mpv 窗口未被视频覆盖的部分的颜色
+#background-tile-size=16              # <1-4096> 在 --background=tiles 模式下，指定背景图案的大小（以像素为单位）。默认值为 16
 #hidpi-window-scale=yes               # <yes|默认 no> 是否执行 HIDPI 缩放。此参数可能会影响窗口大小，禁用可以保持窗口大小不受 DPI 影响
                                       # 默认值情况下初始化的视频窗口随 DPI 改变大小，例如在缩放 200% 的 4k 的显示器打开 800p 视频后自动执行 2 倍缩放变 1600p。此外还会影响其它脚本部分内容
 #window-scale=1.0                     # 指定窗口相对于视频原始大小的缩放倍率，默认为 1.0
@@ -95,7 +99,7 @@ autofit-smaller=40%x30%               # <[W[xH]]> 窗口模式下最小占屏幕
 #keep-open=yes                        # <yes|默认 no|always> 播放列表播放完毕后保持打开，always：文件结束自动暂停，不播放下一文件
 #keep-open-pause=no                   # <默认 yes|no> 播放列表播放播放完毕后暂停
                                       ## --keep-open=yes、--keep-open-pause=yes 参数为 [end] 条件配置组生效前置条件
-idle=no                              # <yes|no|默认 once> 空闲待机（中止播放或所有文件播放后依旧保持 mpv 运行）
+idle=yes                              # <yes|no|默认 once> 空闲待机（中止播放或所有文件播放后依旧保持 mpv 运行）
 #untimed                              # 输出视频帧时请勿入睡。（开启后无法正确显示补帧数值）
 log-file="~~/files/mpv.log"           # 记录 log
 ontop                                 # 窗口置顶
@@ -126,8 +130,7 @@ reset-on-next-file=vid,aid,sid,secondary-sid,vf,af,loop-file,deinterlace,contras
                                       # 播放下一文件时需重置的更改项（色彩、画面、音轨、字幕和滤镜相关)
 input-ipc-server=\\.\pipe\mpvsocket   # input-ipc-server=<ipc_path> 开启 Ipc 功能，Linux/MacOS: input-ipc-server=/tmp/mpvsocket
                                       # 使用 SVP manager 时此项需设置为 mpvpipe 值
-demuxer-max-bytes=1000MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB
-demuxer-max-back-bytes=500MiB
+#demuxer-max-bytes=500MiB             # 播放网络视频时的目标缓存大小（KiB 或 MiB）
 #demuxer-readahead-secs=20            # 限制网络视频的最大缓存时间（秒数）
 #video-exts=3g2,3gp,asf,avi,bdmv,f4v,flv,h264,h265,iso,ifo,ivf,m2ts,m4v,mkv,mov,mp4,mp4v,mpeg,mpg,ogm,ogv,rm,rmvb,ts,vob,webm,wmv,y4m
                                       # 指定选项--autocreate-playlist 和--directory-filter-types 中要匹配的视频文件类型的扩展名列表
@@ -203,6 +206,7 @@ osd-duration=2000                     # 设置（全局）OSD 文本信息的持
 #icc-intent=0                         # ICC 的色彩转换映射意图，0：感知度，1：相对色度（默认值），2：饱和，3：绝对色度。推荐使用感知度映射  https://github.com/mpv-player/mpv/issues/8009#issuecomment-923607273
 #icc-force-contrast=1000              # <no|0-1000000|inf> 色彩管理。覆盖 ICC 文件内的静态对比度数据，默认 no 为不覆盖，oled 可以设置为 inf 即无限（如果 ICC 中此项数据丢失则自动回落到 1000），此项只影响 bt.1886 的内容显示
                                       ## 普通 LCD 一般使用 1000（以面板原生数据为准）；使用 OLED 显示设备的用户尝试使用 1000000 或特殊值 inf。LCD 设置为 1000 可解决某些校色文件对比度极高导致黑色部分太黑
+                                      #! --vo=gpu-next 下此项不会生效，默认使用 ICC 文件内标记的对比度数据，缺失时默认为 1000
 #icc-3dlut-size=64x64x64              # <默认 auto|RxGxB> 从每个维度的 ICC 配置文件生成的 3D LUT 的大小。范围<2--512>
 #icc-cache=no                         # 是否在本地存储 ICC 配置文件的 3dlut 缓存，默认启用
 #icc-cache-dir="~~/cache/icc_cache"   # 指定目录存储和加载从 ICC 配置文件创建的 3D LUT。这可以用来加快加载速度。请注意，这些文件包含未压缩的 LUT。它们的大小取决于--icc-3dlut-size，并且可能非常大。注意：这不会自动清除，因此旧的，未使用的缓存文件可能会无限期地停留
@@ -210,7 +214,7 @@ osd-duration=2000                     # 设置（全局）OSD 文本信息的持
 #use-embedded-icc-profile=no          # 加载包含在媒体文件（如 PNG 图像）中的嵌入式 ICC 配置文件。（默认：yes）。请注意，此选项在--vo=gpu 下仅在同时使用显示 ICC 配置文件（--icc-profile 或--icc-profile-auto）时才有效
 
 ##⇘⇘以下为 target 色彩管理相关参数设置
-#target-prim=auto                     # 广色域屏应该设定此参数为具体值以解决色彩过饱和的问题，当不使用 ICC 色彩管理时，视频颜色将适应此色彩空间。srgb 屏无需更改此默认值（bt.709），其他举例：99% 的 argb 屏幕写 adobe，90%+的 p3 色域屏写 dci-p3
+#target-prim=auto                     # 广色域屏应该设定此参数为具体值以解决色彩过饱和的问题，当不使用 ICC 色彩管理时，视频颜色将适应此色彩空间。srgb 屏无需更改此默认值（bt.709），其他举例：99% 的 argb 屏幕写 adobe，90%+的 p3 色域屏写 dci-p3 或 display-p3
                                       # 使用--target-prim=<value> 参数管理色彩空间时会导致 hdr 下出现偏色问题，hdr 映射时启用--gamut-mapping-mode=clip 参数可解决该问题  https://github.com/mpv-player/mpv/issues/9071
                                       #! 注意：Win11 24H2 版本后，若已开启系统的 HDR 或 ACM（自动色彩管理）功能不要更改此项，否则会产生色域重复缩限导致色彩欠饱和
 #target-gamut=dci-p3                  # 明确限制显示器的色域。您可以使用此选项来限制输出色域，例如 DCIP3-in-BT.2020; 将 `--target-prim` 设置为色彩空间规格，并将 `--target-gamut` 设置为要限制的输出色域。取决与 `--target-prim`。（仅适用于 `--vo=gpu-next`)
@@ -237,8 +241,14 @@ osd-duration=2000                     # 设置（全局）OSD 文本信息的持
                                       # conversion：完全取代颜色解码。这种类型的 LUT 应该摄取图像的原生色彩空间并输出归一化的非线性 RGB
 ##⇘⇘以下为 hdr 相关参数
 #inverse-tone-mapping=yes             # <yes|默认 no> [当 --vo=gpu-next 时生效] ，如果设置，则允许反向色调映射（将 SDR 扩展到 HDR），仅在 HDR 设备上有效。不支持使用部分色调映射曲线，请谨慎使用
-#target-colorspace-hint=yes           # <auto|yes|默认 no> [当 --vo=gpu-next 时生效] ，如果可能的话，自动配置显示器的输出色彩空间以通过媒体流的输入值（例如 HDR 直通）。需要驱动程序支持
-                                      # Windows 需手动切换显示器 HDR 模式（Windows 的限制）
+#target-colorspace-hint=no            # <默认 auto|yes|no> [当 --vo=gpu-next 时生效] ，如果可能的话，自动配置显示器的输出色彩空间以通过媒体流的输入值（这可以用于 HDR 直通或设置 SDR 内容的输出色彩空间）。需要驱动程序支持
+                                      ## auto：只有当前显示参数已知时，才会设置目标色彩空间。目前，Wayland、D3D11 和 winvk 都支持此功能；yes：始终设置目标色彩空间；no：不使用目标色彩空间传输
+                                      ## Windows 需手动切换显示器 HDR 模式（Windows 的限制）才能实现 HDR 直通
+#target-colorspace-hint-mode=target   # <默认 target|source|source-dynamic> [当 --vo=gpu-next 时生效] ，指定如何处理目标色彩空间传输
+                                      ## target：使用基于目标显示器实际功能的元数据，当目标元数据不存在时会尝试回退使用 source。这是更可靠的模式
+                                      ## source：使用源内容的元数据。这是传统的 HDR 直通模式，假定合成器和显示器将直接处理色彩空间并执行任何必要的映射。不推荐使用
+                                      ## source-dynamic：与 'source' 相同，但使用动态的每场景元数据而不是静态 HDR10。这是实验性的，取决于显示器对元数据更改做出反应的能力。请注意，这不会发送完整的 HDR10+ 或杜比视界元数据，但会使用它们来生成 HDR10 动态的每场景元数据
+                                      ##! 注意：--target-* 选项会覆盖这几种模式下的元数据
 #tone-mapping=hable                   # 色调映射算法，其他推荐能用的有 clip|mobius|reinhard|hable|bt.2390|gamma|spline|bt.2446a|st2094-10|st2094-40，默认 auto，根据内部启发式方法选择最佳曲线（--vo=gpu-next 下实际为 spline）
                                       # spline、bt.2446a、st2094-10 和 st2094-40 算法仅限--vo=gpu-next 下可用
                                       ## vo=gpu 时推荐测试使用 hable 或 bt.2390。hable 相对细节保留的更好，bt.2390 对比度较好
@@ -285,7 +295,7 @@ osd-duration=2000                     # 设置（全局）OSD 文本信息的持
                                       # tscale 此项默认值为 1.0，可有效减少 tscale 产生的振铃伪影。其他 scale 算法默认值为 0.0
 #tscale-antiring=1.0                  # 设置抗振铃强度。这试图消除振铃，但会在此过程中引入其他伪影。必须是介于 0.0 和 1.0 之间的浮点数。默认值 0.0 完全禁用抗振铃
                                       # 请注意，这不会影响特殊过滤器 bilinear 和 bicubic_fast
-#dither-depth=auto                    # <N|no|默认 auto> 是否开启色深抖动弥补色彩转换损失。8 位显示器写 8，10 位显示器写 10，auto 的值取决于--gpu-api，不一定正确，vulkan 下必须手动指定 10bit。见问题状态：https://github.com/mpv-player/mpv/issues/8554
+#dither-depth=auto                    # <N|no|默认 auto> 是否开启色深抖动弥补色彩转换损失。8 位显示器写 8，10 位显示器写 10，auto 的值取决于--gpu-api，不一定正确
                                       # 如果 8 抖 10 的显示器使用 10 存在输出异常的情况，改回值 8
 #dither=fruit                         # <默认 fruit|ordered|error-diffusion|no>  [当启用--dither-depth 时生效], 选择色深抖动算法
                                       # error-diffusion 算法效果最好也最耗能，当效能不足时将自动回落到 fruit 算法
@@ -343,7 +353,6 @@ audio-channels=7.1,5.1,stereo         # <默认值 auto-safe|auto|layouts|stereo
 ao=wasapi                             # --ao=<driver1,driver2,...[,]> 指定要使用的音频输出驱动程序的优先级列表，如果列表有尾随的 ','，mpv 将回退到未包含在列表中的驱动程序
                                       ## windows 推荐 wasapi；linux 推荐 alsa，需配合参数--audio-channels=auto；macos 推荐 coreaudio 或 coreaudio_exclusive
                                       ## 经测试如果有其他软件独占音频通道后再打开 MPV 画面会无比卡顿
-audio-buffer=10
 #audio-exclusive=yes                  # 音频通道独占。如果音频存在卡顿问题可关闭这项或以上一项
 #volume=100                           # 播放器启动音量。0 为静音，默认 100
 #volume-max=130                       # <100.0-1000.0> 最大音量。默认值 130（130 的响度约为 100 的两倍 1.3^3≈2）
@@ -361,10 +370,9 @@ gapless-audio=no                      # <no|yes|weak 默认> 尝试在文件更�
                                       # 指定使用"audio-file-auto"选项时尝试匹配的音频文件的扩展名。示例即为默认值
 audio-file-auto=fuzzy                 # <默认 no|exact|fuzzy|all> 指定自动加载外部音轨的方式
                                       ## no：禁用；exact：自动加载含有符合 BCP 47 语言标签语法的扩展名的外部音轨；fuzzy：自动加载包含视频文件名的外部音轨；all：自动加载检测到的所有音轨
-audio-file-paths=audio;audios;**
+audio-file-paths=audio;audios;audio 5.1;audios 5.1;audio 7.1;audios 7.1;音轨
                                       # <path1:path2:...> 在指定的额外目录中寻找匹配的音轨，支持相对和绝对路径
                                       ## ":" 在 windows 上使用 ";" 代替
-                                      ## 可使用 fuzzydir.lua 增强路径配置，添加"**"可实现自动加载视频同目录下所有可匹配的子目录音轨
 alang=japanese,jpn,jap,ja,jp,english,eng,en
                                       # 设置音轨首选语言，但 MPV 优先加载外挂轨道
 #aid=1                                # 暂时无法根据其他的 metadata 选择轨道，mpv 又默认偏好外挂轨道，常常选到不想要的音轨
@@ -393,11 +401,10 @@ sub-codepage=gb18030                          # 指定文本字幕解码时使�
                                               # 指定使用"sub-auto"选项时尝试匹配的字幕文件的扩展名。示例即为默认值
 sub-auto=fuzzy                                # <no|默认 exact|fuzzy|all> 指定自动加载外部字幕的方式
                                               ## no：禁用；exact：自动加载含有符合 BCP 47 语言标签语法的扩展名的外部字幕；fuzzy：自动加载包含视频文件名的外部字幕；all：自动加载检测到的所有字幕
-sub-file-paths=sub;subs;subtitles;字幕;**
+sub-file-paths=sub;subs;subtitles;字幕
                                               # <path1:path2:...> 在指定的额外目录中寻找匹配的字幕。支持相对和绝对路径，示例即自动搜索当前文件路径下名为"sub","subtitles","字幕"文件夹内
                                               ## ":" 在 windows 上使用 ";" 代替
-                                              ## 可使用 fuzzydir.lua 增强路径配置，添加"**"可实现自动加载视频同目录下所有可匹配的子目录字幕
-slang=chs,sc,zh-CN,zh-Hans,cht,tc,zh-Hant,zh-HK,zh-TW,chi,zho,zh
+slang=chs,sc,zh-Hans,zh-CN,cht,tc,zh-Hant,zh-HK,zh-TW,chi,zho,zh
                                               ## 设置字幕首选语言，但 MPV 优先加载外挂轨道
 #sid=1                                        ## 暂时无法根据其他的 metadata 选择轨道，mpv 又默认偏好外挂轨道，常常选到不想要的字幕
                                               ## 建议使用 sub-select.lua 脚本实现依据 metadata 自动选择指定字幕 https://github.com/CogentRedTester/mpv-sub-select
@@ -407,14 +414,18 @@ slang=chs,sc,zh-CN,zh-Hans,cht,tc,zh-Hant,zh-HK,zh-TW,chi,zho,zh
 #subs-match-os-language=yes                   # <默认 yes|no> 自动选择字幕轨道时，选择与操作系统语言匹配的轨道（如果音频流使用其他语言）。请注意，如果设置了"--slang"，这将被完全忽略
 
 #blend-subtitles=yes                          # <yes|video|默认 no> 在插值和颜色管理之前，将字幕混合到视频帧上。值 video 类似于 yes，但是以视频的原始分辨率绘制字幕，并与视频一起缩放
-                                              # --vo=gpu-next 下已弃用 --blend-subtitles=video 参数
                                               # 启用此功能会将字幕限制在视频的可见部分（不能出现在视频下方的黑色空白处）
-                                              # 还会让字幕受 --icc-profile，--target-prim，--target-trc，--interpolation，--gamma-factor 和 --glsl-shaders 的影响
+                                              # 还会让字幕受 --icc-profile，--target-prim，--target-trc，--interpolation，--gamma-factor 和 --glsl-shaders 等的影响
                                               # 使用 --interpolation 时，配合合适的 tscale 算法，可提高字幕性能
                                               ## hdr 下的问题状态 https://github.com/mpv-player/mpv/issues/6368（静态映射不受影响）
-#sub-ass-force-margins=yes                    # [当 --blend-subtitles=yes/video 时无效] 默认值为 no，设为 yes 时，将使 ass 字幕尽可能输出在黑边上。不推荐常设为 yes，会破坏部分 ass 的 pos 标注效果，建议通过快捷键手动开关
+#sub-ass-force-margins=yes                    # [当 --blend-subtitles=yes/video 时无效] 默认值为 no，设为 yes 时，将使 ass 字幕尽可能输出在黑边上
+                                              ## 不推荐常设为 yes，会破坏部分 ass 字幕的 pos 标注效果，建议通过快捷键手动开关
 #stretch-image-subs-to-screen=yes             # 强制拉伸图形字幕到缩放分辨率而不是参考视频分辨率，可以使 PGS 实现输出在黑边的效果。注意：这可能破坏显示效果
-                                              # 注：当视频比例和 PGS 字幕比例不一致时只有开启此项才能获得正确的字幕显示效果（国内电影压制的内封 pgs 字幕大多存在这种问题）
+                                              ## 注：当视频比例和 PGS 字幕比例不一致时只有开启此项才能获得正确的字幕显示效果（国内电影压制的内封 pgs 字幕大多存在这种问题）
+#sub-hdr-peak=sdr                             # <默认 sdr|10-10000> 控制 HDR 输出中的文本字幕和 OSD 的亮度，特殊值 sdr 对应 SDR 参考白（203 nit）
+                                              ## 注意：此选项也会影响使用 --blend-subtitles=<yes|video> 时 HDR 映射 SDR 下的文本字幕亮度
+#image-subs-hdr-peak=sdr                      # <默认 sdr|video|10-10000> 控制 HDR 输出中的图像字幕的亮度，特殊值 sdr 对应 SDR 参考白（203 nit），特殊值 video 使用视频元数据
+                                              ## 注意：此选项也会影响使用 --blend-subtitles=<yes|video> 时 HDR 映射 SDR 下的图形字幕亮度
 
 ##⇘⇘字幕显示出来和 xy-subfilter 不一样？尝试启用下面的设置
 #sub-ass-vsfilter-color-compat=full           # <默认 basic|full|force-601|no> 模仿 (xy-)vsfilter 行为转换字幕颜色空间
@@ -506,7 +517,7 @@ gpu-shader-cache-dir="~~/cache/shaders_cache"                                   
 #load-stats-overlay=no                                                          # 启用 mpv 内置的统计信息脚本 [stats.lua]，默认 yes
 #load-select=no                                                                 # 启用 mpv 内置的选择菜单脚本 [select.lua]，默认 yes
 #ytdl=no                                                                        # 启用 mpv 内置的网址解析增强脚本 [ytdl-hook.lua]，默认 yes
-ytdl-format=bestvideo*+bestaudio/best                                           # <ytdl|best|worst|mp4|webm|...> 直接传递给 youtube-dl 的视频格式/质量。默认值：bestvideo+bestaudio/best
+#ytdl-format=bestvideo*+bestaudio/best                                          # <ytdl|best|worst|mp4|webm|...> 直接传递给 youtube-dl 的视频格式/质量
                                                                                 ## ytdl 不会将 --format 选项传递给 youtube-dl，因此不会覆盖其默认值。请注意，有时 youtube-dl 会返回 mpv 无法使用的格式，在这些情况下，mpv 默认值可能会更好
 #ytdl-extract-chapters=no                                                       # <默认 yes|no> 启用从 youtube-dl 视频描述中提取章节
 #ytdl-raw-options=sub-langs="zh.*",write-subs=,write-auto-subs=
@@ -590,7 +601,7 @@ input-default-bindings=no                                                       
 #include="~~/profiles.conf"                   # 追加读取指定的配置文件
                                               # 自此以下的所有配置组参数亦可单独放入"~~/profiles.conf"中，启用此参数时效果一致
 #input-conf="~~/input.conf"                   # 指定 input 配置文件，用于指定键位绑定
-libplacebo-opts=tone_map_metadata=cie_y
+#libplacebo-opts=tone_map_metadata=cie_y
                                               # 将额外的原始选项传递给 libplacebo 渲染后端（由 --vo=gpu-next 使用），用于调试目的
                                               # 详细参数见：http://libplacebo.org/options
                                               # 示例参数作用为：强制使用峰值检测进行 hdr 色调映射
@@ -650,7 +661,7 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  icc-profile=""
  icc-profile-auto=no
  target-prim=auto
- target-trc=gamma2.2
+ #target-trc=gamma2.2
  #target-peak=203
  target-contrast=auto
 
@@ -715,8 +726,6 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
 
 [HDR2SDR]
  profile-desc=HDR-SDR 映射参数
- target-peak=203
- target-colorspace-hint=no
  tone-mapping=auto
  #tone-mapping-param=1.0
  #tone-mapping-max-boost=1.0
@@ -849,37 +858,45 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  profile-restore=copy
  hdr-peak-percentile=99.8
 
+[SDR-gamut]
+ profile-desc=SDR 内容的色域映射
+ profile-cond=get("video-params/primaries") ~= "bt.709" and get("video-params/gamma") == "bt.1886"
+ profile-restore=copy
+ gamut-mapping-mode=clip
+
+[SDR-target]
+ profile-desc=SDR 显示目标配置
+ profile-cond=not get("video-params/max-luma") and not get("inverse-tone-mapping") and p.current_vo == "gpu-next"
+ profile-restore=copy
+ target-colorspace-hint=no
+
 [HDR]
  profile-desc=HDR 配置
  profile-cond=get("video-params/max-luma") > 203
  profile-restore=copy
  target-peak=auto
  target-colorspace-hint=auto
- inverse-tone-mapping=no   # HDR 下不可启用反向映射功能
+ target-colorspace-hint-mode=target
  blend-subtitles=no
  deband=no
  vf=""
 
 [HDR-PASS]
- #--gpu-api=vulkan 下无法自动获取显示器的峰值亮度和对比度信息，故难以实现正确的 HDR 直通（可以强行传递）
- profile-desc=HDR 直通参数，仅在 HDR 显示模式和--gpu-api=d3d11 下生效
+ profile-desc=HDR 直通参数，仅在 HDR 显示模式下生效
  profile-cond=get("video-params/max-luma") > 203 and get("video-target-params/max-luma") > 203 and p.current_vo == "gpu-next"
  profile-restore=copy
  icc-profile=""
  icc-profile-auto=no
  target-colorspace-hint=auto
- inverse-tone-mapping=no   # HDR 下不可启用反向映射功能
+ target-colorspace-hint-mode=target
+ inverse-tone-mapping=no      # HDR 下不可启用反向映射功能
  target-prim=auto
- #target-gamut=dci-p3      # 或 adobe，用于 argb 色域
+ #target-gamut=dci-p3         # 或 adobe，用于 argb 色域
  target-trc=auto
- #target-contrast=auto     # 或可指定 HDR 显示器的对比度值，默认值会自动获取此信息
- #target-peak=auto         # 或可指定 HDR 显示器的峰值亮度值，默认值会自动获取此信息
-
-[SDR-Gamut]
- profile-desc=SDR 内容的色域映射
- profile-cond=get("video-params/primaries") ~= "bt.709" and get("video-params/gamma") == "bt.1886"
- profile-restore=copy
- gamut-mapping-mode=clip
+ target-peak=auto             # 或可指定 HDR 显示器的峰值亮度值，默认值会自动获取此信息
+ target-contrast=auto         # 或可指定 HDR 显示器的对比度值，默认值会自动获取此信息
+ #sub-hdr-peak=100            # 用于调整 HDR 输出下的文本字幕亮度，越低的值越暗
+ #image-subs-hdr-peak=10000   # 用于调整 HDR 输出下的图像字幕亮度，越高的值越暗，示例为最大值
 
 [video-sync]
  profile-desc=当音频调整速度超过阈值时改变音视频同步模式，以避免明显的音高变化
@@ -887,11 +904,11 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
  profile-restore=copy-equal
  video-sync=display-tempo
 
-#[fps-fix]
-# profile-desc=修复视频帧率和显示刷新率过高引起的异常耗能或掉帧
-# profile-cond=get("estimated-vf-fps") > 47 or get("display-fps") > 120
-# profile-restore=copy
-# video-sync=audio
+[fps-fix]
+ profile-desc=修复视频帧率和显示刷新率过高引起的异常耗能或掉帧
+ profile-cond=get("estimated-vf-fps") > 47 or get("display-fps") > 120
+ profile-restore=copy
+ video-sync=audio
 
 [8k-fix]
  profile-desc=8k av1 下使用 d3d11va 硬解来解决掉帧问题，该方案仅限 --gpu-api=d3d11 下可用
@@ -912,12 +929,12 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
 # profile-restore=copy
 # deinterlace
 
-#[audio-filter]
-#副作用：蓝牙耳机切换时会导致持续的音视频不同步
-# profile-desc=音频通道大于 2 时开启动态范围调节滤镜，适用于双通道设备
-# profile-cond=get("audio-params/channel-count") > 2
-# profile-restore=copy-equal
-# af-pre=@dynaudnorm:lavfi=[dynaudnorm=f=500:g=31:p=0.5:m=5:r=0.9]
+[audio-filter]
+ #副作用：切换音频输出设备时会导致持续的音视频不同步
+ profile-desc=音频通道大于 2 时开启动态范围调节滤镜，适用于双通道设备
+ profile-cond=get("audio-params/channel-count") > 2
+ profile-restore=copy-equal
+ af-pre=@dynaudnorm:lavfi=[dynaudnorm=f=500:g=31:p=0.5:m=5:r=0.9]
 
 [pause]
  profile-desc=暂停时取消置顶
@@ -974,34 +991,9 @@ profile=NNEDI3                                # 适用于大多数场景（NNEDI
 # prefetch-playlist
 # loop-playlist=inf
 
- ##############
- # 传统配置组 #
- ##############
- 
-##⇘⇘中古版本的自动配置，功能有限一般不使用。语法见示例（可以转换为条件配置组写法）
-
-##⇘⇘播放时检测符合条件的文件扩展名激活对应参数，不符合自动撤销
-##[extension.扩展名]
-##不要写 --profile-cond 和 --profile-restore
-##... # 直接写参数即可
-
-#[extension.vpy]
-#profile-desc=支持 "xxxx.vpy" 文件的预览
-#demuxer-lavf-format=vapoursynth
-
-##⇘⇘播放时检测符合条件的协议激活对应参数，不符合自动撤销
-##[protocol.协议名]	
-##不要写 --profile-cond 和 --profile-restore
-##... # 直接写参数即可
-
-#[protocol.https]
-#profile-desc=https 协议下切换显示内容
-#osd-playing-msg='${media-title} ${!chapters==0:章节:${chapter}/${chapters}} ${!playlist-count==1:列表:${playlist-pos-1}/${playlist-count}}'
-#script-opts-append=osc_lazy-title=${media-title} ${!chapters==0:章节:${chapter}/${chapters}} ${!playlist-count==1:列表:${playlist-pos-1}/${playlist-count}}
-
-##⇘⇘配合 display-name.lua 脚本实现 mpv 窗口按显示器名称自动切换参数及配置文件（仅限 Windows），依赖 MultiMonitorTool.exe
+##⇘⇘配合 display-info.dll 插件实现 mpv 窗口按显示器名称自动切换参数及配置文件（仅限 Windows）
 #[TV]
-#profile-cond=get("user-data/display_name") == 'VX2771-4K-HD'
+#profile-cond=get("user-data/display-info/name") == 'VX2771-4K-HD'
 #profile-restore=copy-equal
 #dither-depth=10
 #inverse-tone-mapping=yes
