@@ -1,182 +1,204 @@
-##################################################################
-### v v # # # # # # # # # 基础配置 # # # # # # # # # # # # v v ###
+### 行首如果存在注释符号 "#" 则说明该项 “未启用”
+### 文档_ https://github.com/hooke007/mpv_PlayKit/blob/main/portable_config/mpv.conf
+### 注意：当前预设下，选项 --volume --glsl-shaders 的关联属性已被全局追踪记录，移除缓存文件 saved-props.json 才能使其的更改生效
 
-[exe]
-# 各播放器路径，不要的可以随意删除。记得选择哪种播放器是在下一项设置里。
-mpv = Z:\Software\mpv\mpv.exe
-mpve = C:\Green\mpvnet\mpvnet.exe
-pot = Z:\Scoop\apps\potplayer\current\PotPlayerMini64.exe
-hc = Z:\Scoop\apps\mpc-hc-fork\current\mpc-hc64.exe
-be = Z:\Scoop\apps\mpc-be\current\mpc-be64.exe
-vlc = C:\Green\vlc\vlc.exe
-iina = /Applications/IINA.app/Contents/MacOS/iina-cli
-mpvm = /Applications/mpv.app/Contents/MacOS/mpv
-vlcm = /Applications/VLC.app/Contents/MacOS/VLC
-linux_mpv = mpv
-linux_vlc = vlc
-others = 其他播放器一般也可以，只是不回传记录。
+ input-conf = "~~/input_uosc.conf"
+ include = "~~/profiles.conf"
+ include = "~~/script-opts.conf"
+ use-filedir-conf = yes
+#log-file = "~~desktop/mpv-lazy.log"
 
-[emby]
-# 选择播放器，填写上方的播放器名称，比如 mpv
-player = mpv
+ ########
+ # 基础 #
+ ########
 
-# 是否在关闭播放器后回传进度
-update_progress = yes
+ vo = gpu-next
+#gpu-context = winvk
+#d3d11-exclusive-fs = yes
+#d3d11-flip = no
 
-# 尝试自动全屏
-fullscreen = yes
+ hwdec = auto-copy
+ hwdec-codecs = h264,hevc,vp8,vp9,av1,ffv1
 
-##################################################################
-### v v # # # # # # # # 路径转换设置 # # # # # # # # # # # # v v ###
+#d3d11-adapter = "NVIDIA GeForce RTX 2070 Super"
+#vulkan-device = "NVIDIA GeForce RTX 2070 Super"
 
-# [可选] emby 默认是 http 播放，能用，可以先不管，试用一下。若文件在本地，启用转换体验更好些。
-# 启用转换（读取硬盘模式）的前提是本地有文件或挂载。
-# [可选] emby 服务端也是在本机的无需额外配置。记得点油猴插件开读取硬盘模式，详见 FAQ。
 
-[src]
-# 路径转换原理：获取 emby 上显示的文件路径 > 从下方 emby 端前缀列表里找到符合的路径前缀 > 删除前缀并替换为 [dst] 里相对应的本地前缀。
-# .bat 按 4 有辅助配置程序。
-# 记得点油猴插件开读取硬盘模式，详见 FAQ
-# 按顺序匹配，一旦 emby 端的前缀匹配成功便停止。
-# a b c d 等无实际意义，只是为了把 src 和 dst 条目对应起来。
-# 下方配置会把 /disk/e/movie/movie name (2000)/movie.mkv
-# 转换成 E:/movie/movie name (2000)/movie.mkv
+ ########
+ # 功能 #
+ ########
 
-# emby 端目录前缀列表。
-a = /disk/e
-b = /disk/f/TV
+ idle = yes
+ input-ime = no
+#input-ipc-server = mpvpipe
+ input-builtin-bindings = no
+#pause = yes
 
-[dst]
-# 本地目录前缀列表。
-a = E:
-b = F:\TV
+ hr-seek-framedrop = no
+ save-position-on-quit = yes
+ watch-later-options = start,vid,aid,sid
 
-############################################################################
-# v v v # # # # # # # # # 以下配置可选，可以全删除 # # # # # # # # # # # v v v #
+ target-colorspace-hint = no
+#target-colorspace-hint-mode = source
+#target-colorspace-hint-strict = no
 
-##################################################################
-### v v # # # # # 播放列表（连续播放|多集回传）设置 # # # # # # v v ###
+#autocreate-playlist = same
+ directory-mode = ignore
+#directory-filter-types = video,audio
+#video-exts = avi,flv,m2ts,mkv,mov,mp4,ts,wmv
+#image-exts = avif,bmp,jpeg,jpg,jxl,png,webp
+#audio-exts = aiff,ape,flac,mp3,ogg,opus,wav
 
-[playlist]
+ keep-open = yes
+#ontop = yes
+#title-bar = no
+ autofit-smaller = 50%x50%
+ keepaspect-window = no
+#auto-window-resize = no
+ hidpi-window-scale = no
 
-# 需要开启播放列表的域名的关键字，逗号隔开。禁用就留空或删除。（默认已全部启用）
-enable_host = 
+ demuxer-max-bytes = 1024MiB
+ demuxer-max-back-bytes = 512MiB
+#icc-cache = no
+ icc-cache-dir = "~~/_cache/icc"
+#gpu-shader-cache = no
+ gpu-shader-cache-dir = "~~/_cache/shader"
+ watch-later-dir = "~~/_cache/watch_later"
 
-# 尝试下一集保持播放相同版本，失败会禁用播放列表，可能影响 S0 插入混播。
-# 写下不同版本间，文件名之间的差异字段，用|隔开。（实际是正则，不分大小写）
-# 示例：720|1080|2160|4k|remux|hevc|265|264|sdr|hdr|dv|vision|baha|cr|global|house|vcb|mkv|mp4|简.|.语|内.|..字幕|....组|..@..
-version_filter =
 
-# 条目数量限制，需要大于0，-1 为采用预设值。
-item_limit = -1
+ #######
+ # OSD #
+ #######
 
-# pot 和 vlc(Linux/macOS) 播放含外挂字幕的剧集网络流时。下一集无法加载字幕，故禁用播放列表。
-# 这种情况下，是否需要按下方策略简易连播。
-# 策略：当播放进度超过0.9时关闭播放器，会自动启动播放器播放下一集。
-http_sub_auto_next_ep = no
+ osd-on-seek = msg
+#osd-blur = 1
+ osd-bar-w = 100
+ osd-bar-h = 1.8
+ osd-bar-align-y = -1
+ osd-color = "#672168"
+ osd-outline-color = "#EEEEEE"
+ osd-outline-size = 0.8
+ osd-font-size = 34
+ osd-fractions = yes
+ osd-playing-msg = "${filename}"
+ osd-duration = 2000
+ osd-playing-msg-duration = 3000
 
-##################################################################
-### v v # # # # # # # # # 其他设置 # # # # # # # # # # # # # v v ###
 
-[dev]
+ ########
+ # 音频 #
+ ########
 
-# 字幕未选中时，尝试按顺序规则加载外挂字幕，规则间逗号隔开。
-# 这些字符串是浏览器里选择字幕时，显示的名称的一部分。
-subtitle_priority = 中英特效, 双语特效, 简中特效, 简体特效, 特效, 中上, 中英, 双语, 简, simp, 中, chi, ass, srt, sup, und, (
+ ao = wasapi
+#audio-device = "wasapi/{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
+#audio-exclusive = yes
 
-# 视频有多个版本时，尝试根据文件名关键词选择版本。仅在网页未选中版本时生效，例如：首页点击播放。
-# 关键词间逗号隔开，前面的关键词优先，示例：remux,x265,web-dl
-version_prefer =
+ volume = 100   # 注意：此参数当前在 script-opts.conf 文件中存在关联处理（参见 “保存全局属性并恢复” 部分）
+ volume-max = 130
+ audio-channels = stereo
+#alang = chs,sc,zh-cn,chi,zh,zh-tw,cht,zho,ze
+ audio-file-auto = fuzzy
 
-# 默认限制播放器单实例运行，若解除限制后出现问题，可尝试禁用播放列表及换 mpv 等试试看。
-one_instance_mode = no
 
-# 是否使用系统代理，启用后会覆盖下方自定义代理，默认启用。
-use_system_proxy = yes
+ ########
+ # 视频 #
+ ########
 
-# 脚本的 http 代理，例如 http://127.0.0.1:7890。
-# 若用 OpenClash 可能慢，原因未知，可尝试 CFW 或透明代理等。
-script_proxy =
+#icc-profile-auto = yes
 
-# 播放器的 http 代理，限：mpv mpv.net iina。
-player_proxy =
+#target-prim = display-p3
+#target-trc = gamma2.2
 
-# 是否美化标题，在播放器标题上显示 Emby 里的信息，限：mpv pot。
-pretty_title = yes
+ video-sync = display-resample
+#video-sync-max-video-change = 5
+ interpolation = yes
+#tscale = sphinx
 
-# 根据服务端视频文件地址，是否包含某些字符来选择播放器，分隔符分别是 : , ;
-# 删除本项，或者下方填写的规则匹配失败则回退为默认的播放器。
-player_by_path = mpv: /emby/上显示的路径/或者关键词也可以 ; hc: /disk/abc/anime, /若多个路径/用逗号隔开即可 ;
+ cscale = bilinear
+ scale = bilinear
+ dscale = bicubic
+ sigmoid-upscaling = no
+ correct-downscaling = no
 
-# 需要播放前检查并缓存，视频流重定向链接的，服务器域名的关键词，逗号隔开。
-# 适用于前后端分离等，视频流会重定向的服务器。若随意启用，会多一次请求来检查，反而慢。
-# 对非硬字幕的网络视频流，会节省两次或以上的重定向请求，提高起播速度。（播放进度超过一半时获取下一集重定向，限 mpv）
-# 若重定向只替换了域名，建议使用本地重定向功能，详见 FAQ > 隐藏功能 > 模拟 302 重定向。
-redirect_check_host =
+ dither-depth = no
+#deband = yes
+ deinterlace = auto
 
-# 启用直接播放 strm 内的文件链接，避免 Emby 中转，的服务器域名的关键词，逗号隔开。
-strm_direct_host =
+ background-tile-color-0 = "#B4B4B4"
+ background-tile-color-1 = "#DCDCDC"
+ background-tile-size = 128
 
-# 首次启动时是否杀死多余进程。若关闭该项，如果需要重启脚本，先到任务管理器结束旧进程。
-kill_process_at_start = yes
 
-# 当服务端路径包含以下前缀强制使用读盘模式，忽略油猴设置。逗号隔开，例如: /disk/p, disk/e
-force_disk_mode_path =
+ ####################
+ # 脚本 滤镜 着色器 #
+ ####################
 
-# 模糊日志中的域名及密钥
-mix_log = yes
+#load-stats-overlay = no
+ osc = no
+#ytdl-raw-options-append = cookies-from-browser=edge
+ ytdl-raw-options-append = sub-langs=-danmaku
 
-# 日志路径，可填写 ./log.txt 或者 绝对路径。超过10MB时会重置。留空则禁用。
-log_file = ./log.txt
+#load-scripts = no
 
-# 路径转换时候是否检查文件存在。以便匹配成功但文件不存在时，继续往下匹配。
-path_check = no
+#border-background = blur
+ background-blur-radius = 8
 
-# 脚本请求 https 时，是否跳过证书检查，用于去除自签名证书警告。
-skip_certificate_verify = no
+ glsl-shaders-append = "~~/shaders/QCOM/QCOM_SGEDS_ms_RT.glsl"
+#glsl-shader-opts-append = QCOM_SGEDS_ms_RT/STR=2.0
 
-# 需要实时回传正在播放数据的域名的关键字，逗号隔开。限 mpv。
-playing_feedback_host =
 
-##################################################################
-## v v # # # # # # # bgm.tv 设置 , 详见 FAQ # # # # # # # # v v ###
+ ########
+ # 字幕 #
+ ########
 
-[bangumi]
+ sub-auto = fuzzy
+ sub-file-paths = sub;Subs;subtitles
+ sub-codepage = GB18030
+ slang = chs,sc,zh-cn,chi,zh,zh-tw,cht,zho,ze
+ subs-fallback = yes
 
-# 启用此功能的域名关键词，逗号隔开，不填则禁用此功能。不支持 Plex。
-# 例如：localhost, 127.0.0.1, 192.168., example.com:8096, 全部启用就填一个点：.
-enable_host =
+#blend-subtitles = yes
+ sub-hdr-peak = 100
 
-# bgm 的用户名或 UID。如果设置了用户名，只能填用户名。
-# UID 就是个人资料页里 @123456 或者网址 bgm.tv/user/123456 的数字部分。例如：123456
-username =
+ sub-font = "LXGW WenKai Mono Lite"
+ sub-font-size = 44
+#sub-scale-with-window = no
+ sub-scale-signs = yes
+ sub-outline-size = 4
+ sub-blur = 1
+ sub-color = "#FFD766"
+#sub-back-color = "#641C1C1C"
+#sub-shadow-offset = 2
+ sub-use-margins = yes
 
-# 令牌，注意有效期。生成网址：https://next.bgm.tv/demo/access-token
-# 例如：hsdkxI4l7tUhMgo1MskxRn35qqFl5Ie5cCJ
-access_token =
+#sub-ass-use-video-data = aspect-ratio
+#sub-ass-video-aspect-override  = 16:9
 
-# 观看记录是否仅自己可见。公开则填 no。
-private = yes
+#sub-ass-override = force
+#sub-ass-scale-with-window = yes
+ sub-ass-force-margins = yes
+#sub-ass-style-overrides = Fontname=LXGW WenKai Mono Lite
 
-# 只同步 emby 里特定风格的条目。一般不用改，是正则。注意是风格，不是标签。
-genres = 动画|anim
+ image-subs-hdr-peak = 10000
+#stretch-image-subs-to-screen = yes
+#image-subs-video-resolution = yes
 
-##################################################################
-### v v # # # # # # # Trakt 设置 , 详见 FAQ # # # # # # # # v v ###
 
-[trakt]
+ ########
+ # 截图 #
+ ########
 
-# 启用此功能的域名关键词，逗号隔开，不填则禁用此功能。例如：example.com:8096, plex.direct, 32400
-enable_host =
+ screenshot-format = png
 
-# Trakt 的用户名，注意不是昵称。
-user_name =
+ screenshot-jpeg-quality = 100
+#screenshot-jpeg-source-chroma = no
+ screenshot-png-compression = 4
+ screenshot-webp-lossless = yes
+#screenshot-webp-quality = 100
+#screenshot-webp-compression = 0
+ screenshot-jxl-distance = 0
 
-# 创建 app 时，重定向链接填：http://localhost:58000/trakt_auth
-# 创建好的 trakt app 详情页 -> Client ID
-client_id =
+ screenshot-tag-colorspace = no
+ screenshot-high-bit-depth = no
+ screenshot-template = "~~desktop/MPV-%P-N%n"
 
-# 创建好的 trakt app 详情页 -> Client Secret
-client_secret =
-
-# 启动脚本 -> 创建好的 trakt app 详情页 -> 点击 Authorize 按钮 -> 二次确认后会提示验证成功。
