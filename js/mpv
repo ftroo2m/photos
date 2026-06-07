@@ -20,15 +20,15 @@
  hwdec = auto-copy
  hwdec-codecs = h264,hevc,vp8,vp9,av1,ffv1
 
-#d3d11-adapter = "NVIDIA GeForce RTX 2070 Super"
-#vulkan-device = "NVIDIA GeForce RTX 2070 Super"
+d3d11-adapter = "NVIDIA GeForce RTX 3060 Laptop GPU"
+vulkan-device = "NVIDIA GeForce RTX 3060 Laptop GPU"
 
 
  ########
  # 功能 #
  ########
 
- idle = yes
+ idle = once
  input-ime = no
 #input-ipc-server = mpvpipe
  input-builtin-bindings = no
@@ -42,7 +42,7 @@
 #target-colorspace-hint-mode = source
 #target-colorspace-hint-strict = no
 
-#autocreate-playlist = same
+autocreate-playlist = no
  directory-mode = ignore
 #directory-filter-types = video,audio
 #video-exts = avi,flv,m2ts,mkv,mov,mp4,ts,wmv
@@ -95,10 +95,11 @@
 
  volume = 100   # 注意：此参数当前在 script-opts.conf 文件中存在关联处理（参见 “保存全局属性并恢复” 部分）
  volume-max = 130
- audio-channels = stereo
+ audio-channels = 7.1,5.1,stereo
 #alang = chs,sc,zh-cn,chi,zh,zh-tw,cht,zho,ze
  audio-file-auto = fuzzy
 
+audio-buffer=3
 
  ########
  # 视频 #
@@ -114,9 +115,9 @@
  interpolation = yes
 #tscale = sphinx
 
- cscale = bilinear
+ cscale = ewa_lanczossharp
  scale = bilinear
- dscale = bicubic
+ dscale = catmull_rom
  sigmoid-upscaling = no
  correct-downscaling = no
 
@@ -143,7 +144,7 @@
 #border-background = blur
  background-blur-radius = 8
 
- glsl-shaders-append = "~~/shaders/QCOM/QCOM_SGEDS_ms_RT.glsl"
+  glsl-shaders="~~/shaders/EDI/nnedi3_nns64_win8x4.glsl;~~/shaders/QCOM/QCOM_SGEDS_ms_RT.glsl"
 #glsl-shader-opts-append = QCOM_SGEDS_ms_RT/STR=2.0
 
 
